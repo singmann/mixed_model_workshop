@@ -1,0 +1,130 @@
+---
+title: "Exercise 1"
+output: html_notebook
+---
+
+## Skovgaard-Olsen et al. (2016): The Relevance Effect and Conditionals
+
+- Conditional = *if-then* statement; e.g., If global warning continues, London will be flooded.
+- Bayesian reasoning often assumes 'the Equation': *P*(if *A* then *C*) = *P*(*C*|*A*)
+- Our question: Does the Equation hold even if no apparent relationship between *A* and *C*? 
+  - positive relevance (PO): *A* is a reason for *C* 
+  - negative relevance (NE): *A* is a reason against *C* 
+  - irrelevance (IR): *A* and *C* have no apparent relationship 
+
+- 183 (of 348) participants recruited via `crowdflower.com` worked on 12 items.
+
+- Participant first saw a vignette:
+  
+  > Sophia's scenario: Sophia wishes to find a nice present for her 13-year-old son, Tim, for Christmas. She is running on a tight budget, but she knows that Tim loves participating in live role-playing in the forest and she is really skilled at sewing the orc costumes he needs. Unfortunately, she will not be able to afford the leather parts that such costumes usually have, but she will still be able to make them look nice.
+
+- Then we asked participant for their rating for the conditional probability *P*(*C*|*A*) on the probability scale from 0% to 100%:
+
+  > Suppose Sophia buys a Barbie doll for Tim.   
+  > Under this assumption, how probable is it that the following sentence is true:   
+  > Tim will be excited about his present.
+
+- On the next page, we asked participant for their rating of the probability of the conditional *P*(if *A* then *C*) on the probability scale from 0% to 100%:
+
+  > Could you please rate the probability that the following sentence is true:   
+  > IF Sophia buys a Barbie doll for Tim, THEN Tim will be excited about his present.
+
+### Design
+
+Research question: Does the Equation (i.e., *P*(if *A* then *C*) = *P*(*C*|*A*)) hold even if no apparent relationship between *A* and *C*? 
+
+Full design: 4 x 3 x 2. First two factors repeated-measures, last factor between-subjects.
+
+For each item, participants provide idiosyncratic estimates of *P*(if *A* then *C*) (`dv`) and *P*(*C*|*A*) (`c_given_a`).  
+Each participant worked on 12 items, 4 estimates of *P*(*C*|*A*) (`c_given_a`) for each of 3 relevance conditions (`rel_cond`):
+
+- positive relavnce (PO): *A* is a reason for *C* (IF Sophia buys an orc costume for Tim, THEN Tim will be excited about his present.)
+- negative relevance (NE): *A* is a reason against *C* (IF Sophia buys a Barbie doll for Tim, THEN Tim will be excited about his present.) 
+- irrelevance (IR): *A* and *C* have no apparent relationship (IF Sophia regularly wears shoes, THEN Tim will be excited about his present.)
+
+Type of DV (`dv_question`) is between-subjects condition: 
+
+- Probability of 'if *A* then *C*': How probable is 'if *A* then *C*'?
+- Acceptability of 'if *A* then *C*': How acceptable is it to say 'if *A* then *C*'?).
+  
+Data available at: https://osf.io/j4swp/
+
+## Exercise 1: Analyse the data using the no-pooling approach.
+- Calculate the regression between *P*(if *A* then *C*) and *P*(*C*|*A*) separately for each participant and within-subjects condition.
+- Does this analysis yield some interpretable differences in the regression coefficients between the conditions?
+
+## Getting started:
+
+Some package we might need.
+```{r, message=FALSE, warning=FALSE}
+require(dplyr)
+require(tidyr)
+require(ggplot2)
+require(broom)
+
+```
+
+I have already downloaded the data from the OSF and prepared it according to the descriptions found there. The prepared data is in `dat`.
+
+```{r} 
+# Run complete chunk: Ctrl+Shift+Enter
+
+# You might need to set the correct working directory via the menu: 
+# Session - Set Working Directory - To Source File Location
+
+afex::set_sum_contrasts() # just in case we set orthogonal contrasts
+
+load("ssk16_dat_preapred.rda") # data preapred in 'prepare_data.R'
+str(dat)
+
+```
+
+Variables in the data:
+
+- `p_id`: participant identifier
+- `i_id`: item identifier (i.e., id of vignette)
+- `CgivenA`: original *P*(*C*|*A*)
+- `DV`: original *P*(if *A* then *C*)
+- `rel_cond`: relevance condition with three levels. Within-subject variable
+- `dv_question`: type of question for dv (between-subjects)
+- `dv`: *P*(if *A* then *C*) centered at midpoint of scale (as used in paper)
+- `c_given_a`: *P*(*C*|*A*) centered at midpoint of scale (as used in paper)
+
+## Complete-Pooling Approach
+
+
+
+```{r}
+m0 <- lm(dv~c_given_a, dat)
+summary(m0)
+```
+
+When we completely ignore the dependencies in the data, we can see a clear relationship between the IV and DV. The regression parameter estimate for `c_given_a` is clearly significant (i.e., different from 0) but also not too far away from 1.0. If it were 1.0, this would mean that *P*(if *A* then *C*) = *P*(*C*|*A*) would hold exactly.
+
+Before the next step, let's take a look at the data. It suggests indeed that the relationship between IV and DV is stronger for PO then for the other conditions. But how does this fare across the between-subjects condition?
+
+```{r, fig.width=7, fig.height=5}
+ggplot(data = dat) + 
+  geom_point(mapping = aes(x = CgivenA, y = DV), alpha = 0.2, pch = 16) + 
+  facet_grid(dv_question ~ rel_cond) + 
+  coord_fixed()
+```
+
+
+## Full Instructions  
+
+- Your task is to calculate the regression parameter (and potentially also the intercept) for each participant and within-subject and between-subject condition (i.e., relationship of `dv` and `c_given_a` for each `p_id`, `rel_cond`, and `dv_question` combination).
+- Then compare the individual regression parameters across conditions (i.e., `rel_cond` and `dv_question` combinations). Do this comparison in a graphical way and also statistically (i.e., ANOVA).
+- The goal of this exercise is to combine your knowledge of the `tidyverse` and use it to solve the aforementioned task.
+- I would suggest you use package `dplyr` and potentially `broom` or `tidyr` and `purrr`.
+- In case you need some inspiration for `tidyr` and `purr`, you might want to take a look at chapter 25 (especially 25.2.1, 25.2.2, 25.2.3) of Wickham and Grolemund (2017) see: http://r4ds.had.co.nz/many-models.html
+
+
+```{r}
+# go
+```
+
+## References 
+- Skovgaard-Olsen, N., Singmann, H., & Klauer, K. C. (2016). The relevance effect and conditionals. *Cognition*, 150, 26-36. https://doi.org/10.1016/j.cognition.2015.12.017
+- Wickham, H., & Grolemund, G. (2017). *R for Data Science: Import, Tidy, Transform, Visualize, and Model Data.* Sebastopol  CA: O'Reilly.
+

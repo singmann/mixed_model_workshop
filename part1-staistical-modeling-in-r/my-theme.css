@@ -1,0 +1,36 @@
+/* Two-column layout */
+.pull-left2 {
+  float: left;
+  width: 65%;
+}
+.pull-right2 {
+  float: right;
+  width: 32%;
+}
+.small-code .remark-code { 
+    font-size: 80%;
+}
+.small h1, h2, h3 {
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.small .remark-code { 
+    font-size: 80%;
+}
+
+.inline-grey code {
+  background: #F5F5F5; /* lighter */
+  /* background: #e7e8e2; /* darker */
+  border-radius: 2px;
+  padding: 2px;
+} 
+
+.pull-left3 {
+  float: left;
+  width: 43%;
+}
+.pull-right3 {
+  float: right;
+  width: 52%;
+}
