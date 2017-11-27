@@ -14,7 +14,7 @@ class: center, middle, inverse, title-slide
 # Statistical Modeling in R
 ## The Basics
 ### Henrik Singmann (University of Zurich)<br/>Twitter: <a href='https://twitter.com/HenrikSingmann'><span class="citation">@HenrikSingmann</span></a>
-### June 2017
+### November 2017
 
 ---
 
@@ -22,6 +22,42 @@ class: center, middle, inverse, title-slide
 
 
 
+
+
+class: inline-grey
+# Summary: Analysis with Statistical Models in R
+
+1. Identify probability distribution of data (more correct: of residuals/conditional distribution)
+2. Make sure variables are of correct type via `str()`
+3. Set appropriate contrasts (orthogonal contrasts if model includes interaction): `afex::set_sum_contrasts()`
+4. Describe statistical model using `formula`
+4. Fit model: pass `formula` and `data.frame` to corresponding modeling function (e.g., `lm()`, `glm()`)
+4. Check model fit (e.g., inspect residuals)
+5. Test terms (i.e., main effects and interactions): Pass fitted model to `car::Anova()`
+7. Follow-up tests: 
+   - Estimated marginal means: Pass fitted model to `lsmeans::lsmeans()`/`emmeans::emmeans()`
+   - Specify specific contrasts on estimated marginal means (e.g., `contrast()`, `pairs()`)
+
+`afex` combines fitting (5.) and testing (7.):
+- ANOVAs: `afex::aov_car()`, `afex::aov_ez()`, or `afex::aov_4()`
+- (Generalized) linear mixed-effects models: `afex::mixed()`
+
+---
+
+# Overview: Part I
+
+- Statistical Modeling with `lm` (no mixed-model)
+    - Model setup and model formulas
+    - Continuous versus categorical covariates 
+    - `model.matrix()` and factor codings.
+    - Categorical covariates and interactions
+
+- Tests of Model Terms/Effects with `car::Anova()`
+- Follow-up Tests with `lsmeans`/`emmeans`
+- ANOVAs with `afex`
+- Problem with Repeated-Measures: IID assumption
+
+---
 
 # Statistical Model
 
@@ -146,7 +182,7 @@ coef(m1)
 
 
 ```r
-plot(sat.act$SATV, sat.act$ACT)
+plot(sat.act$SATQ, sat.act$ACT)
 abline(m1)
 ```
 
@@ -201,7 +237,7 @@ coef(m2)
 
 
 ```r
-plot(sat.act$SATV_c, sat.act$ACT)
+plot(sat.act$SATQ_c, sat.act$ACT)
 abline(m2)
 ```
 
@@ -968,13 +1004,13 @@ Anova(m6, type = 3)
 ---
 class: small, inline-grey
 
-# `lsmeans()` Solution for Follow-Up/Post-Hoc Tests
+# `lsmeans`/`emmeans` for Follow-Up/Post-Hoc Tests
 
 .pull-left[
 
 ```r
-require(lsmeans)
-lsmeans(m6, ~education)
+library("lsmeans")      # or: library("emmeans")
+lsmeans(m6, ~education) # or: emmeans(m6, ~education)
 ```
 
 ```
@@ -1044,12 +1080,13 @@ Functions supporting repeated-measures usually require more complicated formulas
 - `lme4::glmer()` generalized linear mixed-effects models
 - `mcmcGLMM` Bayesian generalized linear mixed-effects models
 - `rstan::stan_lmer()`/`rstan::stan_glmer()` Bayesian (generalized) linear mixed-effects models
+- `brms::brm` general framework for formula-based Bayesian models. Extremely flexible.
 
 ---
 class: inline-grey
 # Summary: Analysis with Statistical Models in R
 
-1. Identify probability distribution of data (or better: residuals/conditional distribution)
+1. Identify probability distribution of data (more correct: of residuals/conditional distribution)
 2. Make sure variables are of correct type via `str()`
 3. Set appropriate contrasts (orthogonal contrasts if model includes interaction): `afex::set_sum_contrasts()`
 4. Describe statistical model using `formula`
@@ -1057,7 +1094,7 @@ class: inline-grey
 4. Check model fit (e.g., inspect residuals)
 5. Test terms (i.e., main effects and interactions): Pass fitted model to `car::Anova()`
 7. Follow-up tests: 
-   - Estimated marginal means: Pass fitted model to `lsmeans::lsmeans()`
+   - Estimated marginal means: Pass fitted model to `lsmeans::lsmeans()`/`emmeans::emmeans()`
    - Specify specific contrasts on estimated marginal means (e.g., `contrast()`, `pairs()`)
 
 --
@@ -1151,7 +1188,7 @@ class: inline-grey
 - For repeated-measures independence assumption often violated (e.g., data points from one participant more likely to be similar to each other).
 - Violation of independence assumption can have dramatic consequences on statistical inferences from a model (e.g., increased or decreased Type I errors).
 
-- Three ways to deal with repeated-measures:
+- Three approaches for dealing with repeated-measures:
   1. *Complete pooling*: Ignore dependency in data (often not appropriate, results likely biased, not trustworthy)
   2. *No pooling*: Separate data based on factor producing dependency and calculate separate statistical model for each subset (combining results can be non-trivial)
   3. *Partial pooling*: Analyse data jointly while taking dependency into account (gold standard, e.g., mixed models)
@@ -1234,7 +1271,8 @@ class: small
 "countIncrementalSlides": false,
 "ratio": "16:9"
 });
-if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {window.dispatchEvent(new Event('resize'));});</script>
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {window.dispatchEvent(new Event('resize'));});
+(function() {var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler"); if (!r) return; s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }"; d.head.appendChild(s);})();</script>
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
