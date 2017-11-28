@@ -134,14 +134,14 @@ Examples:
     1. Kenward-Roger (`method="KR"`, default): Provides best-protection against anti-conservative results, requires a lot of RAM for complicated random-effects structures.
     2. Satterthwaite (`method="S"`): Similar to KR, but requires less RAM.
     3. Parametric-bootstrap (`method="PB"`): Simulation-based, can take a lot of time (can be speed-up using parallel computation).
-    4. Likelihood-ratio tests (`method="LRT"`): Provides worst control for anti-conservative results. Can be used if all else fails or if all random effects grouping factors have large numbers of levels (e.g., over 50).
+    4. Likelihood-ratio tests (`method="LRT"`): Provides worst control for anti-conservative results. Can be used if all else fails or if all random-effects grouping factors have many levels (e.g., over 50).
 - `afex::mixed` uses orthogonal contrasts per default. Necessary for categorical variables in interactions.
 
 ### Random-Effects Structure
 
 - Omitting random-effects parameters for model terms which vary within the levels of a random-effects grouping factor and for which random variability exists leads to non-iid residuals (i.e., $\epsilon$) and anti-conservative results (e.g., Barr, Levy, Scheepers, & Tily, 2013).
 - Safeguard is *maximal model justified by the design*.
-- If maximal model is overparameterized and/or contains degenerate estimates or singular fits, power of maximal model can be severely reduced and a reduced model should be used (Bates et al., 2015; Matuschek et al., 2017).
+- If maximal model is overparameterized, contains degenerate estimates, and/or singular fits, power of maximal model may be reduced and a reduced model may be considered (Bates et al., 2015; Matuschek et al., 2017); however, reducing model introduces unknown risk of anti-conservativity, and should be done with caution.
 - Steps for running a mixed model analysis:
     1. Identify desired fixed-effects structure
     2. Identify random-effects grouping factors
