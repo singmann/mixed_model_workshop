@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Overview: Statistical Models in R
 
-1. Identify probability distribution of data (more correct: of residuals/conditional distribution)
+1. Identify probability distribution of data (more correct: of conditional distribution of the response)
 2. Make sure variables are of correct type via `str()`
 3. Set appropriate contrasts (orthogonal contrasts if model includes interaction): `afex::set_sum_contrasts()`
 4. Describe statistical model using `formula`
@@ -161,7 +161,7 @@ Examples:
     - Binomial distribution: Repeated-measures logistic regression
     - Poisson distribution for count data
     - Gamma distribution for non-negative data (e.g., RTs)
-- GLMMs require specification of residual distribution (`family`) and link function.
+- GLMMs require specification of the conditional distribution of the response (`family`) and link function.
 - Link function determines how values on untransformed scale are mapped onto response scale.
 - Specification of random-effects structure conceptually identical as for LMMs.
 - GLMMs only allow two methods for hypothesis testing: `"LRT"` or `"PB"`.
