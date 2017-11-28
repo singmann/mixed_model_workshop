@@ -14,7 +14,7 @@ class: center, middle, inverse, title-slide
 # Mixed Models in R
 ## A Practical Introduction
 ### Henrik Singmann (University of Zurich)<br/>Twitter: <a href='https://twitter.com/HenrikSingmann'><span class="citation">@HenrikSingmann</span></a>
-### June 2017
+### November 2017
 
 ---
 
@@ -23,9 +23,20 @@ class: center, middle, inverse, title-slide
 
 
 
+# Mixed Model Analysis
+
+Steps for running a mixed model analysis:
+1. Identify desired fixed-effects structure
+2. Identify random-effects grouping factors
+3. Identify which factors/terms vary within levels of each random-effects grouping factor: maximal model
+4. Choose method for calculating *p*-values and fit maximal model
+5. Iteratively reduce random-effects structure until all degenrate random-effects parameters are removed.
+
+---
+
 # Mixed Models
 
-- Mixed models are a modern class of statistical models that extend regular regression models by including random effects parameters to account for dependencies among related data points.
+- Mixed models are a modern class of statistical models that extend regular regression models by including random-effects parameters to account for dependencies among related data points.
 
 --
 
@@ -40,12 +51,12 @@ class: center, middle, inverse, title-slide
 ]
 
 .pull-right[
-### Random Effects
+### Random-Effects
 
 - *Random-effects grouping factors*: Categorical variables that capture random or stochastic variability (e.g., participants, items, groups, or other hierarchical-structures).
 - In experimental settings, random effects grouping factors often part of design one wants to generalize over.
 - Random effects factor out idiosyncrasies of sample, thereby providing a more general estimate of the fixed effects of interest.
-- *Random-effects parameters*: Provide each level of random effect grouping factor with idiosyncratic parameter set.
+- *Random-effects parameters*: Provide each level of random-effects grouping factor with idiosyncratic parameter set.
 
 ]
 
@@ -183,10 +194,10 @@ Each `\(S_i\)` idiosyncratic intercept &amp; slope: `lmer(dv ~ c_given_a*rel_con
 *Fixed-effects parameters*: Overall  effect of specific model term on dependent variable
 
 *Random-effects parameters*: 
-- zero-centered offsets/displacements for each level of random effect grouping factor
-- added to specific fixed effect parameter
+- zero-centered offsets/displacements for each level of random-effects grouping factor
+- added to specific fixed-effects parameter
 - assumed to follow normal distribution which provides hierarchical shrinkage, thereby avoids over-fitting
-- should be added to each parameter that varies within the levels of a random effects grouping factor (i.e., factor is *crossed* with random effects grouping factor)
+- should be added to each parameter that varies within the levels of a random-effects grouping factor (i.e., factor is *crossed* with random-effects grouping factor)
 
 .pull-left[
 ![](mixed_models_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
@@ -243,9 +254,9 @@ summary(m_p_max)$coefficients
 class: small
 ## Crossed Random-Effects
 
-So far only considered *participant* as random effects grouping factor:
-- Each participant provides several responses: Random-intercept allows idiosyncratic intercept.
-- `c_given_a` and `rel_cond` are within-subjects variables: Random-slopes allow idiosyncratic effects.
+So far only considered *participant* as random-effects grouping factor:
+- Each participant provides several responses: Random intercept allows idiosyncratic intercept.
+- `c_given_a` and `rel_cond` are within-subjects variables: Random slopes allow idiosyncratic effects.
 
 Participant is only one source of stochastic variability. We usually want to generalize over both *participants* and *items*. 
 - Example data: Each participant provides 1 response for each of 12 items with condition randomly selected.
@@ -387,13 +398,14 @@ Steps for running a mixed model analysis:
 1. Identify desired fixed-effects structure
 2. Identify random-effects grouping factors
 3. Identify which factors/terms vary within levels of each random-effects grouping factor: maximal model
-5. Choose method for calculating *p*-values and fit maximal model
+4. Choose method for calculating *p*-values and fit maximal model
+5. Iteratively reduce random-effects structure until all degenerate random-effects parameters are removed.
 
 If the maximal model shows critical convergence warnings, reduce random-effects structure:
 - Start by removing the correlation among random-effects parameters
-- Remove random-effects parameters for highest-order effects with lowest variance
+- Remove random-effects parameters with variance of 0 and/or for highest-order effects with lowest variance
 - It can sometimes help to try different optimizers
-- Compare *p*-values and fixed-effects estimates across models
+- Compare *p*-values/fixed-effects estimates across models (*p*-values from degenerate/minimal models are not reliable)
 
 ---
 class: small
@@ -639,6 +651,59 @@ icc(m2)
 - ICC often not very useful for random-slope models (Goldstein et al., 2002), direct inspection of SDs often more helpful. 
 
 ---
+class: inline-grey
+
+# GLMMs: Mixed-models with Alternative Distributional Assumptions
+
+- Not all data can be reasonable described by a Normal distribution.
+- Generalized-linear mixed models (GLMMs; e.g., Jaeger, 2008) allow for other distributions: 
+    - Binomial distribution: Repeated-measures logistic regression
+    - Poisson distribution for count data
+    - Gamma distribution for non-negative data (e.g., RTs)
+    - ...
+- GLMMs require specification of residual distribution (`family`) and link function.
+- Link function determines how values on untransformed scale are mapped onto response scale.
+- Specification of random-effects structure conceptually identical as for LMMs.
+- GLMMs only allow two methods for hypothesis testing: `"LRT"` or `"PB"`.
+- Inspection of residuals/model fit more important for GLMMs than for LMMs: R package [`DHARMa`](https://cran.r-project.org/package=DHARMa)
+- Can be fit with `lme4::glmer` or `afex::mixed`, both require `family` argument (e.g., `family = binomial`).
+
+---
+class: small
+
+### GLMM Example
+
+
+```r
+data("fhch2010")
+fhch2 &lt;- droplevels(fhch2010[fhch2010$task == "lexdec", ] )
+gm1 &lt;- mixed(correct ~ stimulus + (stimulus||id) + (stimulus||item), 
+             fhch2, family = binomial,      # implies: binomial(link = "logit")
+             method = "LRT", expand_re = TRUE) # alt: binomial(link = "probit")
+gm1  
+## Mixed Model Anova Table (Type 3 tests, LRT-method)
+## 
+## Model: correct ~ stimulus + (stimulus || id) + (stimulus | item)
+## Data: fhch2
+## Df full model: 7
+##     Effect df Chisq p.value
+## 1 stimulus  1  1.19     .28
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '+' 0.1 ' ' 1
+## Warning messages: [...]
+lsmeans(gm1, "stimulus", type = "response")
+##  stimulus   prob       SE df asymp.LCL asymp.UCL
+##  word     0.9907 0.002323 NA    0.9849    0.9943
+##  nonword  0.9857 0.003351 NA    0.9774    0.9909
+## 
+## Confidence level used: 0.95 
+## Intervals are back-transformed from the logit scale 
+```
+
+- Removing correlations does not remove warnings. Likely reason: Data at boundary.
+- Alternative specification for Binomial model: DV is proportion + `weight` (= N observations) 
+
+---
 
 # Summary 
 
@@ -650,7 +715,7 @@ icc(m2)
 - If maximal model fails to converge or is singular/degenerate: Start by removing correlation, then highest-order effects.
 
 - Linear mixed models (LMMs) can be extended to generalized linear mixed models (GLMMs) that support different link function and residual distribution (via `glmer` or `mixed`).
-- Bayesian estimation possible: `rstanarm::stan_lmer`, `blme`, or `MCMCglmm`.
+- Bayesian estimation possible: `rstanarm::stan_lmer`, `blme`, `MCMCglmm`, or `brms`.
 - More powerful model class: generalized additive mixed models (GAMM; Baayen, Vasisth, Kliegl, &amp; Bates, 2017).
 
 ---
@@ -663,10 +728,14 @@ class: small
 - Bates, D., Kliegl, R., Vasishth, S., &amp; Baayen, H. (2015). *Parsimonious Mixed Models.* arXiv:1506.04967 [stat]. http://arxiv.org/abs/1506.04967
 - Goldstein, H., Browne, W., &amp; Rasbash, J. (2002). Partitioning Variation in Multilevel Models. *Understanding Statistics*, 1(4), 223-231. https://doi.org/10.1207/S15328031US0104_02
 - Hox, J. J. (2010). *Multilevel analysis: techniques and applications.* New York: Routledge.
+- Jaeger, T. F. (2008). Categorical data analysis: Away from ANOVAs (transformation or not) and towards logit mixed models. _Journal of Memory and Language_, 59(4), 434-446. https://doi.org/10.1016/j.jml.2007.11.007
 - Matuschek, H., Kliegl, R., Vasishth, S., Baayen, H., &amp; Bates, D. (2017). Balancing Type I error and power in linear mixed models. *Journal of Memory and Language*, 94, 305-315. https://doi.org/10.1016/j.jml.2017.01.001
 - https://tjmahr.github.io/plotting-partial-pooling-in-mixed-effects-models/
+- https://cran.r-project.org/package=DHARMa
 
 
+---
+class: small
 
 ### References Example Data:
 - Skovgaard-Olsen, N., Singmann, H., &amp; Klauer, K. C. (2016). The relevance effect and conditionals. *Cognition*, 150, 26-36. https://doi.org/10.1016/j.cognition.2015.12.017
@@ -684,7 +753,7 @@ plot(m_max,
      resid(.,scaled=TRUE) ~ c_given_a | rel_cond)
 ```
 
-![](mixed_models_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
+![](mixed_models_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
 ]
 
 .pull-right[
@@ -693,7 +762,7 @@ plot(m_max,
 lattice::qqmath(m_max)
 ```
 
-![](mixed_models_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
+![](mixed_models_files/figure-html/unnamed-chunk-34-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -720,7 +789,8 @@ plot(m_max, resid(., scaled=TRUE) ~ fitted(.) | rel_cond)
 "countIncrementalSlides": false,
 "ratio": "16:9"
 });
-if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {window.dispatchEvent(new Event('resize'));});</script>
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {window.dispatchEvent(new Event('resize'));});
+(function() {var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler"); if (!r) return; s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }"; d.head.appendChild(s);})();</script>
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
