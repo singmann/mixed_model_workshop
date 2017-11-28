@@ -13,7 +13,7 @@ require(broom)
 
 afex::set_sum_contrasts() # just in case we set orthogonal contrasts
 
-load("ssk16_dat_preapred.rda") # data preapred in 'prepare_data.R'
+load("ssk16_dat_preapred_ex1.rda") # data preapred in 'prepare_data.R'
 str(dat)
 
 

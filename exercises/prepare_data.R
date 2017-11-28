@@ -46,11 +46,14 @@ dat$conclusion <- NULL
 
 dat <- droplevels(dat[ dat$conditional == "indicative", ])
 dat$conditional <- NULL
-dat <- droplevels(dat[ dat$dv_question == "probability", ])
-dat$dv_question <- NULL
 dat$type <- NULL
 
 dat <- dplyr::rename(dat, p_id = lfdn, i_id = le_nr)
 length(levels(dat$p_id))
 
 save(dat, file="ssk16_dat_preapred.rda")
+
+dat <- droplevels(dat[ dat$dv_question == "probability", ])
+dat$dv_question <- NULL
+
+save(dat, file="ssk16_dat_preapred_ex1.rda")

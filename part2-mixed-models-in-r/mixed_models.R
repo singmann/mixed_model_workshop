@@ -12,9 +12,9 @@ options(digits = 4)
 load("../exercises/ssk16_dat_preapred.rda")
 str(dat)
 datr <- droplevels(dat[dat$rel_cond != "NE" & dat$dv_question == "probability",])
-require(ggplot2)
+library("ggplot2")
 afex::set_sum_contrasts()
-require(lme4)
+library("lme4")
 
 ## ------------------------------------------------------------------------
 m_fixed <- lm(dv ~ c_given_a*rel_cond, datr)
@@ -139,7 +139,7 @@ abline(a = coef(m_fixed)[1] - coef(m_fixed)[3],
        b = coef(m_fixed)[2] - coef(m_fixed)[4])
 
 ## ------------------------------------------------------------------------
-require(lme4)
+library("lme4")
 m_p_max <- lmer(dv ~ c_given_a*rel_cond + 
                   (c_given_a*rel_cond|p_id), datr)
 summary(m_p_max)$varcor
@@ -179,10 +179,10 @@ m_max <- lmer(dv ~ c_given_a*rel_cond +
 summary(m_max)
 
 ## ---- echo=FALSE, message=FALSE, warning=FALSE, results='hide'-----------
-require(dplyr)
-require(broom)
-require(ggplot2)
-require(tidyr)
+library("dplyr")
+library("broom")
+library("ggplot2")
+library("tidyr")
 no_pooling_estimates <- datr %>% 
   group_by(p_id, rel_cond) %>% 
   do(tidy(lm(dv~c_given_a, .))) %>% 
@@ -241,14 +241,14 @@ estimates_l %>%
 
 
 ## ---- eval=FALSE---------------------------------------------------------
-## require(afex)
+## library("afex")
 ## mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "KR")
 ## mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "S")
 ## mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "LRT")
 ## # mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "PB")
 
 ## ---- echo=FALSE, results='hide', message=FALSE--------------------------
-require(afex)
+library("afex")
 
 ## ---- results='hide', message=FALSE--------------------------------------
 m_red <- mixed(dv ~ c_given_a*rel_cond + 
@@ -285,11 +285,11 @@ abline(a = coef(m_fixed)[1] - coef(m_fixed)[3],
        b = coef(m_fixed)[2] - coef(m_fixed)[4])
 
 ## ---- echo=FALSE, results='hide', message=FALSE--------------------------
-require(afex)
+library("afex")
 load("fitted_lmms.rda")
 
 ## ---- eval=FALSE---------------------------------------------------------
-## require(afex)
+## library("afex")
 ## m_full <- mixed(dv ~ c_given_a*rel_cond*dv_question +
 ##                        (rel_cond*c_given_a|p_id) +
 ##                        (rel_cond*c_given_a*dv_question|i_id),
@@ -311,7 +311,7 @@ lstrends(m_full, "rel_cond", var = "c_given_a")
 fixef(m_full$full_model)[2] - fixef(m_full$full_model)[6] - fixef(m_full$full_model)[7]
 
 ## ---- echo=FALSE, message=FALSE, results='hide'--------------------------
-require(sjstats)
+library("sjstats")
 
 ## ------------------------------------------------------------------------
 m1 <- lmer(dv ~ 1 + (1|p_id), datr)
@@ -323,7 +323,7 @@ m1 <- lmer(dv ~ 1 + (1|p_id), datr)
 # Number of obs: 752, groups:  p_id, 94
 
 0.00572 / (0.0057+0.1461)
-require(sjstats)
+library("sjstats")
 icc(m1)
 
 ## ------------------------------------------------------------------------
@@ -348,6 +348,31 @@ m2 <- lmer(dv ~ 1 + (rel_cond:c_given_a|p_id),
  # Residual                      0.0570   0.239 
 icc(m2)
 
+## ---- eval=FALSE---------------------------------------------------------
+## data("fhch2010")
+## fhch2 <- droplevels(fhch2010[fhch2010$task == "lexdec", ] )
+## gm1 <- mixed(correct ~ stimulus + (stimulus||id) + (stimulus||item),
+##              fhch2, family = binomial,      # implies: binomial(link = "logit")
+##              method = "LRT", expand_re = TRUE) # alt: binomial(link = "probit")
+## gm1
+## ## Mixed Model Anova Table (Type 3 tests, LRT-method)
+## ##
+## ## Model: correct ~ stimulus + (stimulus || id) + (stimulus | item)
+## ## Data: fhch2
+## ## Df full model: 7
+## ##     Effect df Chisq p.value
+## ## 1 stimulus  1  1.19     .28
+## ## ---
+## ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '+' 0.1 ' ' 1
+## ## Warning messages: [...]
+## lsmeans(gm1, "stimulus", type = "response")
+## ##  stimulus   prob       SE df asymp.LCL asymp.UCL
+## ##  word     0.9907 0.002323 NA    0.9849    0.9943
+## ##  nonword  0.9857 0.003351 NA    0.9774    0.9909
+## ##
+## ## Confidence level used: 0.95
+## ## Intervals are back-transformed from the logit scale
+
 ## ---- fig.width=5, fig.height=4------------------------------------------
 plot(m_max, 
      resid(.,scaled=TRUE) ~ c_given_a | rel_cond)
@@ -361,7 +386,7 @@ lattice::qqmath(m_max)
 ## ?plot.merMod
 
 ## ---- eval=FALSE, include=FALSE------------------------------------------
-## require(afex)
+## library("afex")
 ## load("../exercises/ssk16_dat_preapred.rda")
 
 ## ---- eval=FALSE, include=FALSE------------------------------------------

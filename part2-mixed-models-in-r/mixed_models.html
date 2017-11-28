@@ -30,7 +30,7 @@ Steps for running a mixed model analysis:
 2. Identify random-effects grouping factors
 3. Identify which factors/terms vary within levels of each random-effects grouping factor: maximal model
 4. Choose method for calculating *p*-values and fit maximal model
-5. Iteratively reduce random-effects structure until all degenrate random-effects parameters are removed.
+5. Iteratively reduce random-effects structure until all degenerate random-effects parameters are removed.
 
 ---
 
@@ -218,7 +218,7 @@ class: small
 .pull-left[
 
 ```r
-require(lme4)
+library("lme4")
 m_p_max &lt;- lmer(dv ~ c_given_a*rel_cond + 
                   (c_given_a*rel_cond|p_id), datr)
 summary(m_p_max)$varcor
@@ -378,7 +378,7 @@ Methods do not differ for example data:
 
 
 ```r
-require(afex)
+library("afex")
 mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "KR") 
 mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "S") 
 mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "LRT") 
@@ -478,7 +478,7 @@ class: small
 
 
 ```r
-require(afex)
+library("afex")
 m_full &lt;- mixed(dv ~ c_given_a*rel_cond*dv_question +
                        (rel_cond*c_given_a|p_id) +
                        (rel_cond*c_given_a*dv_question|i_id),
@@ -553,6 +553,12 @@ More examples of interplay between `mixed` or `lmer` with `lsmeans`:
 class: small
 
 
+```
+## Warning in checkMatrixPackageVersion(): Package version inconsistency detected.
+## TMB was built with Matrix version 1.2.12
+## Current Matrix version is 1.2.11
+## Please re-install 'TMB' from source or restore original 'Matrix' package
+```
 
 .pull-left[
 ### Intraclass Correlation Coefficient (ICC)
@@ -584,7 +590,7 @@ m1 &lt;- lmer(dv ~ 1 + (1|p_id), datr)
 ```
 
 ```r
-require(sjstats)
+library("sjstats")
 icc(m1)
 ```
 

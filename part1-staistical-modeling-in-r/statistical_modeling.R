@@ -29,7 +29,7 @@ summary(m1)
 coef(m1)
 
 ## ---- fig.height=3.7, fig.width=4, dev='svg'-----------------------------
-plot(sat.act$SATV, sat.act$ACT)
+plot(sat.act$SATQ, sat.act$ACT)
 abline(m1)
 
 ## ------------------------------------------------------------------------
@@ -42,7 +42,7 @@ summary(m2)
 coef(m2)
 
 ## ---- fig.height=3.7, fig.width=4, dev='svg'-----------------------------
-plot(sat.act$SATV_c, sat.act$ACT)
+plot(sat.act$SATQ_c, sat.act$ACT)
 abline(m2)
 
 ## ---- eval=FALSE---------------------------------------------------------
@@ -224,8 +224,8 @@ require(car) # Companion to Applied Regression (Fox & Weisberg, 2011)
 Anova(m6, type = 3)
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
-require(lsmeans)
-lsmeans(m6, ~education)
+library("lsmeans")      # or: library("emmeans")
+lsmeans(m6, ~education) # or: emmeans(m6, ~education)
 
 ## ---- message=FALSE------------------------------------------------------
 pairs(lsmeans(m6,~education),adjust='holm')

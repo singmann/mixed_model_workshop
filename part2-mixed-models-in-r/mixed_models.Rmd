@@ -34,7 +34,7 @@ Steps for running a mixed model analysis:
 2. Identify random-effects grouping factors
 3. Identify which factors/terms vary within levels of each random-effects grouping factor: maximal model
 4. Choose method for calculating *p*-values and fit maximal model
-5. Iteratively reduce random-effects structure until all degenrate random-effects parameters are removed.
+5. Iteratively reduce random-effects structure until all degenerate random-effects parameters are removed.
 
 ---
 
@@ -71,9 +71,9 @@ class:small
 load("../exercises/ssk16_dat_preapred.rda")
 str(dat)
 datr <- droplevels(dat[dat$rel_cond != "NE" & dat$dv_question == "probability",])
-require(ggplot2)
+library("ggplot2")
 afex::set_sum_contrasts()
-require(lme4)
+library("lme4")
 ```
 
 
@@ -316,7 +316,7 @@ $$y=\beta_0 + S_0 + (\beta_{C|A}+ S_{C|A})X_{C|A} + (\beta_{r}+ S_{r})X_{r} + (\
 --
 .pull-left[
 ```{r}
-require(lme4)
+library("lme4")
 m_p_max <- lmer(dv ~ c_given_a*rel_cond + 
                   (c_given_a*rel_cond|p_id), datr)
 summary(m_p_max)$varcor
@@ -388,10 +388,10 @@ class:small
 ### Effect of Partial-Pooling / Hierarchical Shrinkage / Regularization
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-require(dplyr)
-require(broom)
-require(ggplot2)
-require(tidyr)
+library("dplyr")
+library("broom")
+library("ggplot2")
+library("tidyr")
 no_pooling_estimates <- datr %>% 
   group_by(p_id, rel_cond) %>% 
   do(tidy(lm(dv~c_given_a, .))) %>% 
@@ -496,7 +496,7 @@ class: small
 Methods do not differ for example data:
 
 ```{r, eval=FALSE}
-require(afex)
+library("afex")
 mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "KR") 
 mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "S") 
 mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "LRT") 
@@ -531,7 +531,7 @@ class: small
 ### Suppressing Correlations Among Random Effects
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
-require(afex)
+library("afex")
 ```
 
 .pull-left[
@@ -591,12 +591,12 @@ class: small
 ### Mixed Models in R: Fitting
 
 ```{r, echo=FALSE, results='hide', message=FALSE}
-require(afex)
+library("afex")
 load("fitted_lmms.rda")
 ```
 
 ```{r, eval=FALSE}
-require(afex)
+library("afex")
 m_full <- mixed(dv ~ c_given_a*rel_cond*dv_question +
                        (rel_cond*c_given_a|p_id) +
                        (rel_cond*c_given_a*dv_question|i_id),
@@ -634,7 +634,7 @@ More examples of interplay between `mixed` or `lmer` with `lsmeans`:
 class: small
 
 ```{r, echo=FALSE, message=FALSE, results='hide'}
-require(sjstats)
+library("sjstats")
 ```
 
 .pull-left[
@@ -659,7 +659,7 @@ m1 <- lmer(dv ~ 1 + (1|p_id), datr)
 # Number of obs: 752, groups:  p_id, 94
 
 0.00572 / (0.0057+0.1461)
-require(sjstats)
+library("sjstats")
 icc(m1)
 ```
 ]
@@ -824,7 +824,7 @@ plot(m_max, resid(., scaled=TRUE) ~ fitted(.) | rel_cond)
 - Farraway (2002). *Practical Regression and Anova using R*. https://cran.r-project.org/doc/contrib/Faraway-PRA.pdf [Chapter 7]
 
 ```{r, eval=FALSE, include=FALSE}
-require(afex)
+library("afex")
 load("../exercises/ssk16_dat_preapred.rda")
 ```
 

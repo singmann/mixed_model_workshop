@@ -735,11 +735,8 @@ class: small
 
 - For each item, participants provide idiosyncratic estimates of *P*(if *A* then *B*) and *P*(*B*|*A*).
 - Each participant worked on 12 items, 4 per relevance condition (i.e., a 4 x 3 within-subjects design)
-- Type of DV is between-subjects condition: 
-  - Probability of 'if *A* then *C*': How probable is 'if *A* then *C*'?
-  - Acceptability of 'if *A* then *C*': How acceptable is it to say 'if *A* then *C*'?).
 
-- Data available at: https://osf.io/j4swp/
+- Data in the `exercises`folder (also available at: https://osf.io/j4swp/)
 
 --
 
