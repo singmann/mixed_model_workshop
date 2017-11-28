@@ -12,7 +12,7 @@ output: html_notebook
   - negative relevance (NE): *A* is a reason against *C* 
   - irrelevance (IR): *A* and *C* have no apparent relationship 
 
-- 183 (of 348) participants recruited via `crowdflower.com` worked on 12 items.
+- 94 (of 348) participants recruited via `crowdflower.com` worked on 12 items.
 
 - Participant first saw a vignette:
   
@@ -33,7 +33,7 @@ output: html_notebook
 
 Research question: Does the Equation (i.e., *P*(if *A* then *C*) = *P*(*C*|*A*)) hold even if no apparent relationship between *A* and *C*? 
 
-Full design: 4 x 3 x 2. First two factors repeated-measures, last factor between-subjects.
+Full design: 4 x 3. Both factors repeated-measures.
 
 For each item, participants provide idiosyncratic estimates of *P*(if *A* then *C*) (`dv`) and *P*(*C*|*A*) (`c_given_a`).  
 Each participant worked on 12 items, 4 estimates of *P*(*C*|*A*) (`c_given_a`) for each of 3 relevance conditions (`rel_cond`):
@@ -42,12 +42,7 @@ Each participant worked on 12 items, 4 estimates of *P*(*C*|*A*) (`c_given_a`) f
 - negative relevance (NE): *A* is a reason against *C* (IF Sophia buys a Barbie doll for Tim, THEN Tim will be excited about his present.) 
 - irrelevance (IR): *A* and *C* have no apparent relationship (IF Sophia regularly wears shoes, THEN Tim will be excited about his present.)
 
-Type of DV (`dv_question`) is between-subjects condition: 
-
-- Probability of 'if *A* then *C*': How probable is 'if *A* then *C*'?
-- Acceptability of 'if *A* then *C*': How acceptable is it to say 'if *A* then *C*'?).
-  
-Data available at: https://osf.io/j4swp/
+Data available in the folder (also at: https://osf.io/j4swp/)
 
 ## Exercise 1: Analyse the data using the no-pooling approach.
 - Calculate the regression between *P*(if *A* then *C*) and *P*(*C*|*A*) separately for each participant and within-subjects condition.
@@ -86,13 +81,10 @@ Variables in the data:
 - `CgivenA`: original *P*(*C*|*A*)
 - `DV`: original *P*(if *A* then *C*)
 - `rel_cond`: relevance condition with three levels. Within-subject variable
-- `dv_question`: type of question for dv (between-subjects)
 - `dv`: *P*(if *A* then *C*) centered at midpoint of scale (as used in paper)
 - `c_given_a`: *P*(*C*|*A*) centered at midpoint of scale (as used in paper)
 
 ## Complete-Pooling Approach
-
-
 
 ```{r}
 m0 <- lm(dv~c_given_a, dat)
@@ -103,17 +95,17 @@ When we completely ignore the dependencies in the data, we can see a clear relat
 
 Before the next step, let's take a look at the data. It suggests indeed that the relationship between IV and DV is stronger for PO then for the other conditions. But how does this fare across the between-subjects condition?
 
-```{r, fig.width=7, fig.height=5}
+```{r, fig.width=7, fig.height=3}
 ggplot(data = dat) + 
   geom_point(mapping = aes(x = CgivenA, y = DV), alpha = 0.2, pch = 16) + 
-  facet_grid(dv_question ~ rel_cond) + 
+  facet_grid(. ~ rel_cond) + 
   coord_fixed()
 ```
 
 
 ## Full Instructions  
 
-- Your task is to calculate the regression parameter (and potentially also the intercept) for each participant and within-subject and between-subject condition (i.e., relationship of `dv` and `c_given_a` for each `p_id`, `rel_cond`, and `dv_question` combination).
+- Your task is to calculate the regression parameter (and potentially also the intercept) for each participant and within-subject condition (i.e., relationship of `dv` and `c_given_a` for each `p_id` and `rel_cond`).
 - Then compare the individual regression parameters across conditions (i.e., `rel_cond` and `dv_question` combinations). Do this comparison in a graphical way and also statistically (i.e., ANOVA).
 - The goal of this exercise is to combine your knowledge of the `tidyverse` and use it to solve the aforementioned task.
 - I would suggest you use package `dplyr` and potentially `broom` or `tidyr` and `purrr`.
@@ -121,6 +113,7 @@ ggplot(data = dat) +
 
 
 ```{r}
+
 # go
 ```
 
