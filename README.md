@@ -7,6 +7,7 @@ This repo contains the slides and exercise materials for my mixed model workshop
 - `R` packages necessary for the analysis (install with `install.packages("package")` at `R` prompt): `afex` (which automatically installs the additional requirements `lsmeans`, `lme4`, and `car`), `psych` (for example data)
 - `R` packages `dplyr`, `broom`, `tidyr`, `purrr`, and `ggplot2` for the exercise (not all might be necessary).
 - `R` package `xaringan` to compile the slides.
+- `R` package `sjstats` for Intraclass Correlation Coefficient (ICC)
 - A html 5 compatible browser to view the slides.
 - `RStudio`: https://www.rstudio.com/products/rstudio/download3/#download
 
