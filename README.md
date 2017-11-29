@@ -2,6 +2,9 @@
 
 This repo contains the slides and exercise materials for my mixed model workshop. The first instance of this workshop was held as part of the [Data on the Mind 2017](http://www.dataonthemind.org/2017-workshop).
 
+This workshop is loosely based on my chapter: [An introduction to linear mixed modeling in experimental psychology.](http://singmann.org/download/publications/singmann_kellen-introduction-mixed-models.pdf)
+Read the chapter to get a more comprehensive overview.
+
 ### Requirements
 - A recent version of `R` (currently `R 3.4.2`): `https://cran.rstudio.com/`
 - `R` packages necessary for the analysis (install with `install.packages("package")` at `R` prompt): `afex` (which automatically installs the additional requirements `lsmeans`, `lme4`, and `car`), `psych` (for example data)
