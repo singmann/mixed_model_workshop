@@ -5,7 +5,7 @@ author: "Henrik Singmann (University of Zurich)<br/>Twitter: <a href='https://tw
 date: "November 2017"
 output:
   xaringan::moon_reader:
-    css: ["default", "my-theme.css"]
+    css: ["default", "default-fonts", "my-theme.css"]
     lib_dir: libs
     nature:
       highlightStyle: github

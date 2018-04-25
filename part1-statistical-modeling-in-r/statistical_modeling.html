@@ -4,7 +4,8 @@
     <title>Statistical Modeling in R</title>
     <meta charset="utf-8">
     <meta name="author" content="Henrik Singmann (University of Zurich) Twitter: @HenrikSingmann" />
-    <link href="libs/remark-css/example.css" rel="stylesheet" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
     <link rel="stylesheet" href="my-theme.css" type="text/css" />
   </head>
   <body>
@@ -433,9 +434,9 @@ sat.act %&gt;% group_by(gender) %&gt;%
 ```
 ## # A tibble: 2 x 2
 ##   gender     m
-##   &lt;fctr&gt; &lt;dbl&gt;
-## 1   male 28.82
-## 2 female 28.40
+##   &lt;fct&gt;  &lt;dbl&gt;
+## 1 male    28.8
+## 2 female  28.4
 ```
 
 
@@ -594,9 +595,9 @@ sat.act %&gt;% group_by(gender) %&gt;%
 ```
 ## # A tibble: 2 x 2
 ##   gender     m
-##   &lt;fctr&gt; &lt;dbl&gt;
-## 1   male 28.82
-## 2 female 28.40
+##   &lt;fct&gt;  &lt;dbl&gt;
+## 1 male    28.8
+## 2 female  28.4
 ```
 
 ```r
@@ -609,7 +610,7 @@ sat.act %&gt;% group_by(gender) %&gt;%
 ## # A tibble: 1 x 1
 ##   `mean(m)`
 ##       &lt;dbl&gt;
-## 1     28.61
+## 1      28.6
 ```
 
 ]
@@ -668,19 +669,19 @@ sat.act %&gt;%
 ## # A tibble: 12 x 3
 ## # Groups:   gender [?]
 ##    gender education `mean(ACT)`
-##    &lt;fctr&gt;    &lt;fctr&gt;       &lt;dbl&gt;
-##  1   male         0       29.04
-##  2   male         1       26.58
-##  3   male         2       26.65
-##  4   male         3       28.67
-##  5   male         4       28.94
-##  6   male         5       30.83
-##  7 female         0       26.07
-##  8 female         1       27.83
-##  9 female         2       27.20
-## 10 female         3       28.16
-## 11 female         4       29.37
-## 12 female         5       29.12
+##    &lt;fct&gt;  &lt;fct&gt;           &lt;dbl&gt;
+##  1 male   0                29.0
+##  2 male   1                26.6
+##  3 male   2                26.7
+##  4 male   3                28.7
+##  5 male   4                28.9
+##  6 male   5                30.8
+##  7 female 0                26.1
+##  8 female 1                27.8
+##  9 female 2                27.2
+## 10 female 3                28.2
+## 11 female 4                29.4
+## 12 female 5                29.1
 ```
 ]
 
@@ -736,7 +737,7 @@ sat.act %&gt;%
 ## # A tibble: 1 x 1
 ##   `mean(m)`
 ##       &lt;dbl&gt;
-## 1     28.21
+## 1      28.2
 ```
 ]
 
@@ -964,7 +965,7 @@ sat.act %&gt;%
 ## # A tibble: 1 x 1
 ##   `mean(m)`
 ##       &lt;dbl&gt;
-## 1     28.21
+## 1      28.2
 ```
 ]
 
@@ -1268,8 +1269,15 @@ class: small
 "countIncrementalSlides": false,
 "ratio": "16:9"
 });
-if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {window.dispatchEvent(new Event('resize'));});
-(function() {var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler"); if (!r) return; s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }"; d.head.appendChild(s);})();</script>
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
