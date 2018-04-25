@@ -5,6 +5,12 @@ This repo contains the slides and exercise materials for my mixed model workshop
 This workshop is loosely based on my chapter: [An introduction to linear mixed modeling in experimental psychology.](http://singmann.org/download/publications/singmann_kellen-introduction-mixed-models.pdf)
 Read the chapter to get a more comprehensive overview.
 
+The repo currently contains two `html` presentations:
+- [Part 1: Statistical Modeling in R](https://htmlpreview.github.io/?https://github.com/singmann/mixed_model_workshop/blob/master/part1-statistical-modeling-in-r/statistical_modeling.html)
+- [Part 2: Mixed Models in R](https://htmlpreview.github.io/?https://github.com/singmann/mixed_model_workshop/blob/master/part2-mixed-models-in-r/mixed_models.html)
+
+In addition, the repo contains a [`pdf` handout](https://github.com/singmann/mixed_model_workshop/raw/master/handout/mixed_model_handout.pdf) providing a concise overview. 
+
 ### Requirements
 - A recent version of `R` (currently `R 3.4.2`): `https://cran.rstudio.com/`
 - `R` packages necessary for the analysis (install with `install.packages("package")` at `R` prompt): `afex` (which automatically installs the additional requirements `lsmeans`, `lme4`, and `car`), `psych` (for example data)
