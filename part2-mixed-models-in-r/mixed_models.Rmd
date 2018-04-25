@@ -458,6 +458,7 @@ estimates_l %>%
   select(-std.error, -statistic, -p.value) %>% 
   spread(rel_cond, estimate) %>% 
   na.omit() %>% 
+  ungroup %>% 
   ggplot() + 
   aes(x = PO, y = IR, color = key) + 
   geom_point(size = 2) + 
@@ -822,6 +823,11 @@ plot(m_max, resid(., scaled=TRUE) ~ fitted(.) | rel_cond)
 ### Interpreting Residuals
 - Zuur et al. (2009). *Mixed Effects Models and Extensions in Ecology with R.* Springer. [Chapter 2]
 - Farraway (2002). *Practical Regression and Anova using R*. https://cran.r-project.org/doc/contrib/Faraway-PRA.pdf [Chapter 7]
+
+### Further Diagnostics
+- http://janhove.github.io/analysis/2018/04/25/graphical-model-checking
+- https://cran.r-project.org/web/packages/influence.ME/index.html
+- https://cran.r-project.org/web/packages/DHARMa/index.html
 
 ```{r, eval=FALSE, include=FALSE}
 library("afex")

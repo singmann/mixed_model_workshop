@@ -4,7 +4,8 @@
     <title>Mixed Models in R</title>
     <meta charset="utf-8">
     <meta name="author" content="Henrik Singmann (University of Zurich) Twitter: @HenrikSingmann" />
-    <link href="libs/remark-css/example.css" rel="stylesheet" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
     <link rel="stylesheet" href="my-theme.css" type="text/css" />
   </head>
   <body>
@@ -497,12 +498,12 @@ m_full
 ## Data: dat
 ##                           Effect       df          F p.value
 ## 1                      c_given_a 1, 33.46 619.36 ***  &lt;.0001
-## 2                       rel_cond 2, 16.33  95.07 ***  &lt;.0001
+## 2                       rel_cond 2, 16.57  95.07 ***  &lt;.0001
 ## 3                    dv_question 1, 40.04       0.06     .80
-## 4             c_given_a:rel_cond 2, 21.74  22.90 ***  &lt;.0001
+## 4             c_given_a:rel_cond 2, 20.24  22.90 ***  &lt;.0001
 ## 5          c_given_a:dv_question 1, 24.50       0.01     .94
-## 6           rel_cond:dv_question 2, 20.29       0.84     .45
-## 7 c_given_a:rel_cond:dv_question 2, 24.15       1.01     .38
+## 6           rel_cond:dv_question 2, 21.13       0.84     .45
+## 7 c_given_a:rel_cond:dv_question 2, 23.95       1.01     .38
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '+' 0.1 ' ' 1
 ```
@@ -515,6 +516,15 @@ class: small
 
 ```r
 lsm.options(lmer.df = "asymptotic") # or "Kenward-Roger" or "Satterthwaite"
+```
+
+```
+## Warning: 'lsm.options' is deprecated.
+## Use 'emm_options' instead.
+## See help("Deprecated")
+```
+
+```r
 lstrends(m_full, "rel_cond", var = "c_given_a")
 ```
 
@@ -523,10 +533,10 @@ lstrends(m_full, "rel_cond", var = "c_given_a")
 ```
 
 ```
-##  rel_cond c_given_a.trend      SE df asymp.LCL asymp.UCL
-##  PO                0.7815 0.03525 NA    0.7124    0.8506
-##  NE                0.6135 0.04722 NA    0.5210    0.7061
-##  IR                0.4339 0.04127 NA    0.3531    0.5148
+##  rel_cond c_given_a.trend      SE  df asymp.LCL asymp.UCL
+##  PO                0.7815 0.03525 Inf    0.7124    0.8506
+##  NE                0.6135 0.04722 Inf    0.5210    0.7061
+##  IR                0.4339 0.04127 Inf    0.3531    0.5148
 ## 
 ## Results are averaged over the levels of: dv_question 
 ## Degrees-of-freedom method: asymptotic 
@@ -553,12 +563,6 @@ More examples of interplay between `mixed` or `lmer` with `lsmeans`:
 class: small
 
 
-```
-## Warning in checkMatrixPackageVersion(): Package version inconsistency detected.
-## TMB was built with Matrix version 1.2.12
-## Current Matrix version is 1.2.11
-## Please re-install 'TMB' from source or restore original 'Matrix' package
-```
 
 .pull-left[
 ### Intraclass Correlation Coefficient (ICC)
@@ -595,6 +599,7 @@ icc(m1)
 ```
 
 ```
+## 
 ## Linear mixed model
 ##  Family: gaussian (identity)
 ## Formula: dv ~ 1 + (1 | p_id)
@@ -622,6 +627,7 @@ icc(m1)
 ```
 
 ```
+## 
 ## Linear mixed model
 ##  Family: gaussian (identity)
 ## Formula: dv ~ 1 + (1 | p_id)
@@ -645,6 +651,11 @@ icc(m2)
 ```
 
 ```
+## Caution! ICC for random-slope-intercept models usually not meaningful. See 'Note' in `?icc`.
+```
+
+```
+## 
 ## Linear mixed model
 ##  Family: gaussian (identity)
 ## Formula: dv ~ 1 + (rel_cond:c_given_a | p_id)
@@ -787,6 +798,11 @@ plot(m_max, resid(., scaled=TRUE) ~ fitted(.) | rel_cond)
 ### Interpreting Residuals
 - Zuur et al. (2009). *Mixed Effects Models and Extensions in Ecology with R.* Springer. [Chapter 2]
 - Farraway (2002). *Practical Regression and Anova using R*. https://cran.r-project.org/doc/contrib/Faraway-PRA.pdf [Chapter 7]
+
+### Further Diagnostics
+- http://janhove.github.io/analysis/2018/04/25/graphical-model-checking
+- https://cran.r-project.org/web/packages/influence.ME/index.html
+- https://cran.r-project.org/web/packages/DHARMa/index.html
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
@@ -795,8 +811,15 @@ plot(m_max, resid(., scaled=TRUE) ~ fitted(.) | rel_cond)
 "countIncrementalSlides": false,
 "ratio": "16:9"
 });
-if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {window.dispatchEvent(new Event('resize'));});
-(function() {var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler"); if (!r) return; s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }"; d.head.appendChild(s);})();</script>
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
