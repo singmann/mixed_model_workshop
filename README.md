@@ -16,11 +16,12 @@ The repo currently contains two `html` presentations:
 In addition, the repo contains a [`pdf` handout](https://github.com/singmann/mixed_model_workshop/raw/master/handout/mixed_model_handout.pdf) providing a concise overview. 
 
 ### Requirements
-- A recent version of `R` (currently `R 3.4.2`): `https://cran.rstudio.com/`
-- `R` packages necessary for the analysis (install with `install.packages("package")` at `R` prompt): `afex` (which automatically installs the additional requirements `lsmeans`, `lme4`, and `car`), `psych` (for example data)
-- `R` packages `dplyr`, `broom`, `tidyr`, `purrr`, and `ggplot2` for the exercise (not all might be necessary).
+- A recent version of `R` (currently `R 3.5.0`): `https://cran.rstudio.com/`
+- `R` packages necessary for the analysis (install with `install.packages("package")` at `R` prompt): `afex` (which automatically installs the additional requirements `emmeans`, `lme4`, and `car`), `psych` (for example data)
+- `R` package `tidyverse` for the exercises (we mainly need `dplyr`, `broom`, `tidyr`, `purrr`, and `ggplot2`).
 - `R` package `xaringan` to compile the slides.
 - `R` package `sjstats` for Intraclass Correlation Coefficient (ICC)
+- Possibly `R` packages `sjPlot` and `MuMIn` for some examples.
 - A html 5 compatible browser to view the slides.
 - `RStudio`: https://www.rstudio.com/products/rstudio/download3/#download
 
