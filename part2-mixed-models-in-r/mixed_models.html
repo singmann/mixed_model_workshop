@@ -15,7 +15,7 @@ class: center, middle, inverse, title-slide
 # Mixed Models in R
 ## A Practical Introduction
 ### Henrik Singmann (University of Zurich)<br/>Twitter: <a href='https://twitter.com/HenrikSingmann'><span class="citation">@HenrikSingmann</span></a>
-### November 2017
+### June 2018
 
 ---
 
@@ -67,13 +67,171 @@ class:small
 
 
 
-# Example Data
+# Example Data: Skovgaard-Olsen et al. (2016)
 
-Reduced data of Skovgaard-Olsen et al. (2016):
-- 2 relevance conditions: positive and negative
-- No between-subjects condition (only probability question)
+- Is there an overall association between *P*(if *A* then *B*) and *P*(*B*|*A*)?
 
 .pull-left[
+
+
+```r
+m_fixed &lt;- lm(dv ~ c_given_a, datr)
+summary(m_fixed)
+```
+
+```
+## 
+## Call:
+## lm(formula = dv ~ c_given_a, data = datr)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.8014 -0.0776  0.0605  0.1886  0.9224 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  -0.0605     0.0106    -5.7  1.8e-08 ***
+## c_given_a     0.7238     0.0287    25.2  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.287 on 750 degrees of freedom
+## Multiple R-squared:  0.458,	Adjusted R-squared:  0.457 
+## F-statistic:  634 on 1 and 750 DF,  p-value: &lt;2e-16
+```
+]
+.pull-right[
+
+![](mixed_models_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+
+`$$y=\beta_0 + \beta_{C|A}X_{C|A} + \epsilon$$`
+
+]
+
+---
+class: small
+
+.pull-left2[
+### Fixed Effects Model
+
+`$$y=\beta_0 + \beta_{C|A}X_{C|A} + \epsilon$$`
+
+- `\(\beta\)` are scalar regression parameters
+- `\(X\)` is a covariate vector (numerical independent variable)
+- assumes error vector `\(\epsilon\)` is *iid*, `\(\epsilon \sim \mathcal{N}(0, \sigma^2_{\epsilon})\)`, which is likely false.
+]
+
+.pull-right2[
+![](mixed_models_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+]
+
+--
+
+### A First Mixed Effects Model
+
+`$$y=\beta_0 + (\beta_{C|A}+ S_{C|A})X_{C|A} + \epsilon$$`
+- `\(S_{C|A}\)` is a zero-centered vector of participant specific random effects: `\(S_{C|A} \sim \mathcal{N}(0, \sigma^2_{S_{C|A}})\)`
+- `\(S_{C|A}\)` provides each participant with their own regression weight: overall `\(\beta_{C|A}\)` plus idiosyncratic `\(S_{C|A}\)`.
+- As parameter, model estimates variance of random effects vector, `\(\sigma^2_{S_{C|A}}\)`.
+- As `\(S_{C|A}\)` alters the regression slope `\(\beta_{C|A}\)`, also known as *random slope*.
+- In `lme4::lmer` syntax: `lmer(dv ~ c_given_a + (0+c_given_a|p_id), datr)`
+
+---
+class: small
+
+
+.pull-left2[
+### Fixed Effects Model
+
+`$$y=\beta_0 + \beta_{C|A}X_{C|A} + \beta_{r}X_{r} + \beta_{I}X_{I} + \epsilon$$`
+
+- `\(\beta\)` are scalar regression parameters
+- `\(X\)` is a covariate vector (numerical independent variable)
+- assumes error vector `\(\epsilon\)` is *iid*, `\(\epsilon \sim \mathcal{N}(0, \sigma^2_{\epsilon})\)`, which is likely false.
+]
+
+.pull-right2[
+![](mixed_models_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+]
+
+### A First Mixed Effects Model
+
+`$$y=\beta_0 + (\beta_{C|A}+ S_{C|A})X_{C|A} + \epsilon$$`
+- `\(S_{C|A}\)` is a zero-centered vector of participant specific random effects: `\(S_{C|A} \sim \mathcal{N}(0, \sigma^2_{S_{C|A}})\)`
+- `\(S_{C|A}\)` provides each participant with their own regression weight: overall `\(\beta_{C|A}\)` plus idiosyncratic `\(S_{C|A}\)`.
+- As parameter, model estimates variance of random effects vector, `\(\sigma^2_{S_{C|A}}\)`.
+- As `\(S_{C|A}\)` alters the regression slope `\(\beta_{C|A}\)`, also known as *random slope*.
+- In `lme4::lmer` syntax: `lmer(dv ~ c_given_a + (0+c_given_a|p_id), datr)`
+
+
+---
+class: small
+
+### A More Reasonable Mixed Model
+
+First model did not allow for different intercepts, `\(\beta_0\)`, for each participant. 
+
+`$$y=\beta_0 + S_0 + (\beta_{C|A}+ S_{C|A})X_{C|A} + \epsilon$$`
+- Model now has a random intercept, `\(S_0\)`, and a random slope, `\(S_{C|A}\)`.
+- `\(S\)`-vectors still zero-centered vectors of participant specific random effects. However, we now estimate both, variance and covariance of random effects:
+  
+`$$\left( \begin{matrix} S_0 \\ S_{C|A} \end{matrix} \right)
+ \sim \mathcal{N}\left( \left[ \begin{matrix} 0 \\ 0 \end{matrix} \right] , \left[ \begin{matrix} \sigma^2_{S_0}&amp;\rho_{S_{0},S_{C|A}}\sigma_{S_{0}}\sigma_{S_{C|A}} \\ \rho_{S_{C|A},S_{0}}\sigma_{S_{0}}\sigma_{S_{C|A}}&amp;\sigma^2_{S_{C|A}} \end{matrix} \right] \right)$$`
+
+Each `\(S_i\)` idiosyncratic intercept &amp; slope: `lmer(dv ~ c_given_a + (c_given_a|p_id), datr)`
+
+&lt;img src="mixed_models_files/figure-html/unnamed-chunk-6-1.png" width="25%" /&gt;
+
+---
+
+### Interim Summary
+
+*Fixed-effects parameters*: Overall effect of specific model term on dependent variable
+
+*Random-effects parameters*: 
+- zero-centered offsets/displacements for each level of random-effects grouping factor
+- added to specific fixed-effects parameter
+- assumed to follow normal distribution which provides hierarchical shrinkage, thereby avoids over-fitting
+- should be added to each parameter that varies within the levels of a random-effects grouping factor (i.e., factor is *crossed* with random-effects grouping factor)
+
+&lt;img src="mixed_models_files/figure-html/unnamed-chunk-7-1.png" width="25%" /&gt;
+---
+class: small
+### Example Data: Skovgaard-Olsen et al. (2016)
+
+- Conditional = *if-then* statement; e.g., If global warning continues, London will be flooded.
+- Bayesian reasoning often assumes 'the Equation': *P*(if *A* then *C*) = *P*(*C*|*A*)
+- Our question: Does the Equation hold even if no apparent relationship between *A* and *C*? 
+  - positive relevance (PO): *A* is a reason for *C* 
+  - irrelevance (IR): *A* and *C* have no apparent relationship 
+
+--
+
+  &gt; Sophia's scenario: Sophia wishes to find a nice present for her 13-year-old son, Tim, for Christmas. She is running on a tight budget, but she knows that Tim loves participating in live role-playing in the forest and she is really skilled at sewing the orc costumes he needs. Unfortunately, she will not be able to afford the leather parts that such costumes usually have, but she will still be able to make them look nice.
+
+--
+
+### Positive relevance (PO)
+
+  &gt; IF Sophia makes Tim an orc costume, THEN he will be excited about his present.
+
+--
+
+### Irrelevance (IR)
+
+  &gt; IF Sophia regularly wears shoes, THEN Tim will be excited about his present.
+
+---
+
+# Example Data: Skovgaard-Olsen et al. (2016)
+
+&lt;img src="mixed_models_files/figure-html/unnamed-chunk-8-1.png" width="80%" /&gt;
+
+---
+
+.pull-left[
+
+### Fixed Effects Model
 
 
 ```r
@@ -106,7 +264,7 @@ summary(m_fixed)
 ]
 .pull-right[
 
-![](mixed_models_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+![](mixed_models_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 
 `$$y=\beta_0 + \beta_{C|A}X_{C|A} + \beta_{r}X_{r} + \beta_{I}X_{I} + \epsilon$$`
 
@@ -126,7 +284,7 @@ class: small
 ]
 
 .pull-right[
-![](mixed_models_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+![](mixed_models_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
 ]
 
 --
@@ -155,7 +313,7 @@ class: small
 ]
 
 .pull-right[
-![](mixed_models_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+![](mixed_models_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
 ]
 
 ### A First Mixed Effects Model
@@ -185,27 +343,7 @@ First model did not allow for different intercepts, `\(\beta_0\)`, for each part
 Each `\(S_i\)` idiosyncratic intercept &amp; slope: `lmer(dv ~ c_given_a*rel_cond + (c_given_a|p_id), datr)`
 
 .pull-left[
-![](mixed_models_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
-]
-
----
-
-### Interim Summary
-
-*Fixed-effects parameters*: Overall  effect of specific model term on dependent variable
-
-*Random-effects parameters*: 
-- zero-centered offsets/displacements for each level of random-effects grouping factor
-- added to specific fixed-effects parameter
-- assumed to follow normal distribution which provides hierarchical shrinkage, thereby avoids over-fitting
-- should be added to each parameter that varies within the levels of a random-effects grouping factor (i.e., factor is *crossed* with random-effects grouping factor)
-
-.pull-left[
-![](mixed_models_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
-]
-
-.pull-right[
-![](mixed_models_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+![](mixed_models_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -248,7 +386,7 @@ summary(m_p_max)$coefficients
 ]
 
 .pull-right[
-![](mixed_models_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+![](mixed_models_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -333,7 +471,7 @@ class:small
 
 Comparison of no-pooling and partial-pooling (i.e., LMM) estimates for `c_given_a` slopes:
 
-&lt;img src="mixed_models_files/figure-html/unnamed-chunk-14-1.png" width="500px" height="300px" /&gt;
+&lt;img src="mixed_models_files/figure-html/unnamed-chunk-19-1.png" width="500px" height="300px" /&gt;
 
 ]
 
@@ -342,7 +480,7 @@ Comparison of no-pooling and partial-pooling (i.e., LMM) estimates for `c_given_
 
 Distribution of no-pooling and partial-pooling (i.e., LMM) estimates for `c_given_a` slopes:
 
-&lt;img src="mixed_models_files/figure-html/unnamed-chunk-15-1.png" width="400px" height="350px" /&gt;
+&lt;img src="mixed_models_files/figure-html/unnamed-chunk-20-1.png" width="400px" height="350px" /&gt;
 ]
 
 - If individual effects can be assumed to come from one normal distribution, partial-pooling provides better estimates than no-pooling even on the individual level (at least on average).
@@ -351,10 +489,125 @@ Distribution of no-pooling and partial-pooling (i.e., LMM) estimates for `c_give
 ---
 class:small
 
-&lt;img src="mixed_models_files/figure-html/unnamed-chunk-16-1.png" width="1000px" height="500px" /&gt;
+&lt;img src="mixed_models_files/figure-html/unnamed-chunk-21-1.png" width="1000px" height="500px" /&gt;
 
 - from Tristan Mahr: https://tjmahr.github.io/plotting-partial-pooling-in-mixed-effects-models/
 
+---
+class: small
+
+## Example Data: Productivity Scores for Machines and Workers
+
+
+```r
+data("Machines", package = "MEMSS")
+```
+
+- `Worker`: `Factor` giving unique identifier for the worker.
+- `Machine`: `Factor` with levels A, B, and C identifying machine brand.
+- `score`: Overall productivity score taking into account number and quality of components produced.
+
+Research question: Do the machines differ in their score?
+
+
+
+.pull-left[
+
+![](mixed_models_files/figure-html/unnamed-chunk-24-1.svg)&lt;!-- --&gt;
+
+]
+
+--
+
+.pull-right[
+Fixed-effects model (without aggregation)
+
+
+```r
+mmach &lt;- lm(score ~ Machine, Machines)
+car::Anova(mmach, type = 3)
+```
+
+```
+## Anova Table (Type III tests)
+## 
+## Response: score
+##             Sum Sq Df F value  Pr(&gt;F)    
+## (Intercept) 192139  1  5758.4 &lt; 2e-16 ***
+## Machine       1755  2    26.3 1.4e-08 ***
+## Residuals     1702 51                    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+]
+
+---
+
+## Example Data: Productivity Scores for Machines and Workers
+
+
+```r
+data("Machines", package = "MEMSS")
+```
+
+- `Worker`: `Factor` giving unique identifier for the worker.
+- `Machine`: `Factor` with levels A, B, and C identifying machine brand.
+- `score`: Overall productivity score taking into account number and quality of components produced.
+
+Research question: Do the machines differ in their score?
+
+
+
+.pull-left[
+
+Fixed-effects model (without aggregation)
+
+
+```r
+mmach &lt;- lm(score ~ Machine, Machines)
+car::Anova(mmach, type = 3)
+```
+
+```
+## Anova Table (Type III tests)
+## 
+## Response: score
+##             Sum Sq Df F value  Pr(&gt;F)    
+## (Intercept) 192139  1  5758.4 &lt; 2e-16 ***
+## Machine       1755  2    26.3 1.4e-08 ***
+## Residuals     1702 51                    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+]
+
+
+.pull-right[
+
+Mixed-model
+
+
+```r
+m2 &lt;- lmer(score~Machine+(Machine|Worker), Machines)
+car::Anova(m2, type = 3, test = "F")
+```
+
+```
+## Analysis of Deviance Table (Type III Wald F tests with Kenward-Roger df)
+## 
+## Response: score
+##                 F Df Df.res  Pr(&gt;F)    
+## (Intercept) 773.6  1      5 1.1e-06 ***
+## Machine      32.8  2      4  0.0033 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+]
 
 ---
 class: small
@@ -461,7 +714,7 @@ m_red
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '+' 0.1 ' ' 1
 ```
 
-![](mixed_models_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+![](mixed_models_files/figure-html/unnamed-chunk-35-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -515,17 +768,8 @@ class: small
 
 
 ```r
-lsm.options(lmer.df = "asymptotic") # or "Kenward-Roger" or "Satterthwaite"
-```
-
-```
-## Warning: 'lsm.options' is deprecated.
-## Use 'emm_options' instead.
-## See help("Deprecated")
-```
-
-```r
-lstrends(m_full, "rel_cond", var = "c_given_a")
+emm_options(lmer.df = "asymptotic") # or "Kenward-Roger" or "Satterthwaite"
+emtrends(m_full, "rel_cond", var = "c_given_a")
 ```
 
 ```
@@ -558,6 +802,53 @@ fixef(m_full$full_model)[2] - fixef(m_full$full_model)[6] - fixef(m_full$full_mo
 More examples of interplay between `mixed` or `lmer` with `lsmeans`:
 - https://cran.r-project.org/package=afex/vignettes/afex_mixed_example.html
 - https://cran.r-project.org/package=lsmeans/vignettes/using-lsmeans.pdf
+
+---
+
+### Mixed Models in R: Follow-up Analyses
+
+
+```r
+data("Machines", package = "MEMSS")
+mmach &lt;- mixed(score~Machine+(Machine|Worker), Machines)
+```
+
+```
+## Fitting one lmer() model. [DONE]
+## Calculating p-values. [DONE]
+```
+
+```r
+mmach
+```
+
+```
+## Mixed Model Anova Table (Type 3 tests, KR-method)
+## 
+## Model: score ~ Machine + (Machine | Worker)
+## Data: Machines
+##    Effect   df        F p.value
+## 1 Machine 2, 4 32.80 **    .003
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '+' 0.1 ' ' 1
+```
+
+
+
+```r
+pairs(emmeans(mmach, "Machine"))
+```
+
+```
+##  contrast estimate    SE  df z.ratio p.value
+##  A - B      -7.967 2.421 Inf  -3.291  0.0029
+##  A - C     -13.917 1.540 Inf  -9.036  &lt;.0001
+##  B - C      -5.950 2.446 Inf  -2.432  0.0398
+## 
+## P value adjustment: tukey method for comparing a family of 3 estimates
+```
+
+
 
 ---
 class: small
@@ -708,7 +999,7 @@ gm1
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '+' 0.1 ' ' 1
 ## Warning messages: [...]
-lsmeans(gm1, "stimulus", type = "response")
+emmeans(gm1, "stimulus", type = "response")
 ##  stimulus   prob       SE df asymp.LCL asymp.UCL
 ##  word     0.9907 0.002323 NA    0.9849    0.9943
 ##  nonword  0.9857 0.003351 NA    0.9774    0.9909
@@ -770,7 +1061,7 @@ plot(m_max,
      resid(.,scaled=TRUE) ~ c_given_a | rel_cond)
 ```
 
-![](mixed_models_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
+![](mixed_models_files/figure-html/unnamed-chunk-48-1.png)&lt;!-- --&gt;
 ]
 
 .pull-right[
@@ -779,7 +1070,7 @@ plot(m_max,
 lattice::qqmath(m_max)
 ```
 
-![](mixed_models_files/figure-html/unnamed-chunk-34-1.png)&lt;!-- --&gt;
+![](mixed_models_files/figure-html/unnamed-chunk-49-1.png)&lt;!-- --&gt;
 
 ]
 

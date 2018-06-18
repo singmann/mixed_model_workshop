@@ -2,7 +2,7 @@
 title: "Mixed Models in R"
 subtitle: "A Practical Introduction"
 author: "Henrik Singmann (University of Zurich)<br/>Twitter: <a href='https://twitter.com/HenrikSingmann'>@HenrikSingmann</a>"
-date: "November 2017"
+date: "June 2018"
 output:
   xaringan::moon_reader:
     css: ["default", "default-fonts", "my-theme.css"]
@@ -77,13 +77,202 @@ library("lme4")
 ```
 
 
-# Example Data
+# Example Data: Skovgaard-Olsen et al. (2016)
 
-Reduced data of Skovgaard-Olsen et al. (2016):
-- 2 relevance conditions: positive and negative
-- No between-subjects condition (only probability question)
+- Is there an overall association between *P*(if *A* then *B*) and *P*(*B*|*A*)?
 
 .pull-left[
+
+```{r}
+m_fixed <- lm(dv ~ c_given_a, datr)
+summary(m_fixed)
+```
+]
+.pull-right[
+
+```{r, echo=FALSE, dpi=500, fig.width=3.5, fig.height=3.5}
+par(pty="s")
+limits <- c(-0.5, 0.5)
+plot(dv ~ c_given_a, datr, asp = 1, ylim=limits, xlim=limits)
+abline(m_fixed)
+```
+
+$$y=\beta_0 + \beta_{C|A}X_{C|A} + \epsilon$$
+
+]
+
+---
+class: small
+
+.pull-left2[
+### Fixed Effects Model
+
+$$y=\beta_0 + \beta_{C|A}X_{C|A} + \epsilon$$
+
+- $\beta$ are scalar regression parameters
+- $X$ is a covariate vector (numerical independent variable)
+- assumes error vector $\epsilon$ is *iid*, $\epsilon \sim \mathcal{N}(0, \sigma^2_{\epsilon})$, which is likely false.
+]
+
+.pull-right2[
+```{r, echo=FALSE, dpi=300, fig.width=3.5, fig.height=4}
+par(pty="s")
+limits <- c(-0.5, 0.5)
+plot(dv ~ c_given_a, datr, asp = 1, ylim=limits, xlim=limits)
+abline(m_fixed)
+```
+]
+
+--
+
+### A First Mixed Effects Model
+
+$$y=\beta_0 + (\beta_{C|A}+ S_{C|A})X_{C|A} + \epsilon$$
+- $S_{C|A}$ is a zero-centered vector of participant specific random effects: $S_{C|A} \sim \mathcal{N}(0, \sigma^2_{S_{C|A}})$
+- $S_{C|A}$ provides each participant with their own regression weight: overall $\beta_{C|A}$ plus idiosyncratic $S_{C|A}$.
+- As parameter, model estimates variance of random effects vector, $\sigma^2_{S_{C|A}}$.
+- As $S_{C|A}$ alters the regression slope $\beta_{C|A}$, also known as *random slope*.
+- In `lme4::lmer` syntax: `lmer(dv ~ c_given_a + (0+c_given_a|p_id), datr)`
+
+---
+class: small
+
+
+.pull-left2[
+### Fixed Effects Model
+
+$$y=\beta_0 + \beta_{C|A}X_{C|A} + \beta_{r}X_{r} + \beta_{I}X_{I} + \epsilon$$
+
+- $\beta$ are scalar regression parameters
+- $X$ is a covariate vector (numerical independent variable)
+- assumes error vector $\epsilon$ is *iid*, $\epsilon \sim \mathcal{N}(0, \sigma^2_{\epsilon})$, which is likely false.
+]
+
+.pull-right2[
+```{r, echo=FALSE, dpi=500, fig.width=3.5, fig.height=4, warning=FALSE}
+m_tmp <- lmer(dv ~ c_given_a + (0+c_given_a|p_id), datr)
+rnd_coefs <- coef(m_tmp)$p_id
+par(pty="s")
+limits <- c(-0.5, 0.5)
+plot(dv ~ c_given_a, datr, 
+     asp = 1, ylim=limits, xlim=limits)
+for (i in seq_len(nrow(rnd_coefs))) 
+  abline(a = rnd_coefs[i,1], 
+         b = rnd_coefs[i,2],
+         col = "lightgrey")
+abline(m_fixed)
+```
+]
+
+### A First Mixed Effects Model
+
+$$y=\beta_0 + (\beta_{C|A}+ S_{C|A})X_{C|A} + \epsilon$$
+- $S_{C|A}$ is a zero-centered vector of participant specific random effects: $S_{C|A} \sim \mathcal{N}(0, \sigma^2_{S_{C|A}})$
+- $S_{C|A}$ provides each participant with their own regression weight: overall $\beta_{C|A}$ plus idiosyncratic $S_{C|A}$.
+- As parameter, model estimates variance of random effects vector, $\sigma^2_{S_{C|A}}$.
+- As $S_{C|A}$ alters the regression slope $\beta_{C|A}$, also known as *random slope*.
+- In `lme4::lmer` syntax: `lmer(dv ~ c_given_a + (0+c_given_a|p_id), datr)`
+
+
+---
+class: small
+
+### A More Reasonable Mixed Model
+
+First model did not allow for different intercepts, $\beta_0$, for each participant. 
+
+$$y=\beta_0 + S_0 + (\beta_{C|A}+ S_{C|A})X_{C|A} + \epsilon$$
+- Model now has a random intercept, $S_0$, and a random slope, $S_{C|A}$.
+- $S$-vectors still zero-centered vectors of participant specific random effects. However, we now estimate both, variance and covariance of random effects:
+  
+$$\left( \begin{matrix} S_0 \\ S_{C|A} \end{matrix} \right)
+ \sim \mathcal{N}\left( \left[ \begin{matrix} 0 \\ 0 \end{matrix} \right] , \left[ \begin{matrix} \sigma^2_{S_0}&\rho_{S_{0},S_{C|A}}\sigma_{S_{0}}\sigma_{S_{C|A}} \\ \rho_{S_{C|A},S_{0}}\sigma_{S_{0}}\sigma_{S_{C|A}}&\sigma^2_{S_{C|A}} \end{matrix} \right] \right)$$
+
+Each $S_i$ idiosyncratic intercept & slope: `lmer(dv ~ c_given_a + (c_given_a|p_id), datr)`
+
+```{r, echo=FALSE, dpi=300, fig.width=3.5, fig.height=3.5, warning=FALSE, out.width='25%'}
+m_tmp <- lmer(dv ~ c_given_a + (1+c_given_a|p_id), datr)
+rnd_coefs <- coef(m_tmp)$p_id
+rnd_coefs <- coef(m_tmp)$p_id
+par(pty="s")
+limits <- c(-0.5, 0.5)
+plot(dv ~ c_given_a, datr,
+     asp = 1, ylim=limits, xlim=limits)
+for (i in seq_len(nrow(rnd_coefs))) 
+  abline(a = rnd_coefs[i,1], 
+         b = rnd_coefs[i,2],
+         col = "lightgrey")
+abline(m_fixed)
+```
+
+---
+
+### Interim Summary
+
+*Fixed-effects parameters*: Overall effect of specific model term on dependent variable
+
+*Random-effects parameters*: 
+- zero-centered offsets/displacements for each level of random-effects grouping factor
+- added to specific fixed-effects parameter
+- assumed to follow normal distribution which provides hierarchical shrinkage, thereby avoids over-fitting
+- should be added to each parameter that varies within the levels of a random-effects grouping factor (i.e., factor is *crossed* with random-effects grouping factor)
+
+```{r, echo=FALSE, dpi=300, fig.width=3.5, fig.height=4, warning=FALSE , out.width='25%'}
+m_tmp <- lmer(dv ~ c_given_a + (1+c_given_a|p_id), datr)
+rnd_coefs <- coef(m_tmp)$p_id
+rnd_coefs <- coef(m_tmp)$p_id
+par(pty="s")
+limits <- c(-0.5, 0.5)
+plot(dv ~ c_given_a, datr,
+     asp = 1, ylim=limits, xlim=limits)
+for (i in seq_len(nrow(rnd_coefs))) 
+  abline(a = rnd_coefs[i,1], 
+         b = rnd_coefs[i,2],
+         col = "lightgrey")
+abline(m_fixed)
+```
+---
+class: small
+### Example Data: Skovgaard-Olsen et al. (2016)
+
+- Conditional = *if-then* statement; e.g., If global warning continues, London will be flooded.
+- Bayesian reasoning often assumes 'the Equation': *P*(if *A* then *C*) = *P*(*C*|*A*)
+- Our question: Does the Equation hold even if no apparent relationship between *A* and *C*? 
+  - positive relevance (PO): *A* is a reason for *C* 
+  - irrelevance (IR): *A* and *C* have no apparent relationship 
+
+--
+
+  > Sophia's scenario: Sophia wishes to find a nice present for her 13-year-old son, Tim, for Christmas. She is running on a tight budget, but she knows that Tim loves participating in live role-playing in the forest and she is really skilled at sewing the orc costumes he needs. Unfortunately, she will not be able to afford the leather parts that such costumes usually have, but she will still be able to make them look nice.
+
+--
+
+### Positive relevance (PO)
+
+  > IF Sophia makes Tim an orc costume, THEN he will be excited about his present.
+
+--
+
+### Irrelevance (IR)
+
+  > IF Sophia regularly wears shoes, THEN Tim will be excited about his present.
+
+---
+
+# Example Data: Skovgaard-Olsen et al. (2016)
+
+```{r, echo=FALSE, dpi=500, fig.width=7, fig.height=4, warning=FALSE, out.width='80%'}
+ggplot(datr, aes(y = dv, x = c_given_a)) +
+  geom_point() +
+  facet_wrap(~ rel_cond) + 
+  theme_light() + coord_fixed()
+```
+
+---
+
+.pull-left[
+
+### Fixed Effects Model
 
 ```{r}
 m_fixed <- lm(dv ~ c_given_a*rel_cond, datr)
@@ -218,70 +407,6 @@ Each $S_i$ idiosyncratic intercept & slope: `lmer(dv ~ c_given_a*rel_cond + (c_g
 
 .pull-left[
 ```{r, echo=FALSE, dpi=500, fig.width=7, fig.height=3.5, warning=FALSE}
-m_tmp <- lmer(dv ~ c_given_a*rel_cond + (1+c_given_a|p_id), datr)
-rnd_coefs <- coef(m_tmp)$p_id
-par(mfrow = c(1,2))
-par(pty="s")
-limits <- c(-0.5, 0.5)
-plot(dv ~ c_given_a, datr, subset = rel_cond == "PO", 
-     asp = 1, ylim=limits, xlim=limits, main ="PO")
-for (i in seq_len(nrow(rnd_coefs))) 
-  abline(a = rnd_coefs[i,1] + rnd_coefs[i,3], 
-         b = rnd_coefs[i,2] + rnd_coefs[i,4],
-         col = "lightgrey")
-abline(a = coef(m_fixed)[1] + coef(m_fixed)[3], 
-       b = coef(m_fixed)[2] + coef(m_fixed)[4])
-plot(dv ~ c_given_a, datr, subset = rel_cond == "IR", 
-     asp = 1, ylim=limits, xlim=limits, main ="IR")
-for (i in seq_len(nrow(rnd_coefs))) 
-  abline(a = rnd_coefs[i,1] - rnd_coefs[i,3], 
-         b = rnd_coefs[i,2] - rnd_coefs[i,4],
-         col = "lightgrey")
-abline(a = coef(m_fixed)[1] - coef(m_fixed)[3], 
-       b = coef(m_fixed)[2] - coef(m_fixed)[4])
-```
-]
-
----
-
-### Interim Summary
-
-*Fixed-effects parameters*: Overall  effect of specific model term on dependent variable
-
-*Random-effects parameters*: 
-- zero-centered offsets/displacements for each level of random-effects grouping factor
-- added to specific fixed-effects parameter
-- assumed to follow normal distribution which provides hierarchical shrinkage, thereby avoids over-fitting
-- should be added to each parameter that varies within the levels of a random-effects grouping factor (i.e., factor is *crossed* with random-effects grouping factor)
-
-.pull-left[
-```{r, echo=FALSE, dpi=500, fig.width=7, fig.height=4, warning=FALSE}
-m_tmp <- lmer(dv ~ c_given_a*rel_cond + (0+c_given_a|p_id), datr)
-rnd_coefs <- coef(m_tmp)$p_id
-par(mfrow = c(1,2))
-par(pty="s")
-limits <- c(-0.5, 0.5)
-plot(dv ~ c_given_a, datr, subset = rel_cond == "PO", 
-     asp = 1, ylim=limits, xlim=limits, main ="PO")
-for (i in seq_len(nrow(rnd_coefs))) 
-  abline(a = rnd_coefs[i,1] + rnd_coefs[i,3], 
-         b = rnd_coefs[i,2] + rnd_coefs[i,4],
-         col = "lightgrey")
-abline(a = coef(m_fixed)[1] + coef(m_fixed)[3], 
-       b = coef(m_fixed)[2] + coef(m_fixed)[4])
-plot(dv ~ c_given_a, datr, subset = rel_cond == "IR", 
-     asp = 1, ylim=limits, xlim=limits, main ="IR")
-for (i in seq_len(nrow(rnd_coefs))) 
-  abline(a = rnd_coefs[i,1] - rnd_coefs[i,3], 
-         b = rnd_coefs[i,2] - rnd_coefs[i,4],
-         col = "lightgrey")
-abline(a = coef(m_fixed)[1] - coef(m_fixed)[3], 
-       b = coef(m_fixed)[2] - coef(m_fixed)[4])
-```
-]
-
-.pull-right[
-```{r, echo=FALSE, dpi=500, fig.width=7, fig.height=4, warning=FALSE}
 m_tmp <- lmer(dv ~ c_given_a*rel_cond + (1+c_given_a|p_id), datr)
 rnd_coefs <- coef(m_tmp)$p_id
 par(mfrow = c(1,2))
@@ -448,7 +573,7 @@ class:small
 
 ```{r, echo=FALSE, out.width='1000px', out.height='500px', dpi = 500, fig.width=10, fig.height=5}
 
-df_gravity <- as.data.frame(summary(lsmeans::lstrends(m_fixed, "rel_cond", var = "c_given_a")))
+df_gravity <- as.data.frame(summary(emmeans::emtrends(m_fixed, "rel_cond", var = "c_given_a")))
 df_gravity <- df_gravity %>% 
   select(rel_cond, c_given_a.trend) %>% 
   spread(rel_cond, c_given_a.trend) %>% 
@@ -474,6 +599,90 @@ estimates_l %>%
 
 - from Tristan Mahr: https://tjmahr.github.io/plotting-partial-pooling-in-mixed-effects-models/
 
+---
+class: small
+
+## Example Data: Productivity Scores for Machines and Workers
+
+```{r}
+data("Machines", package = "MEMSS")
+```
+
+- `Worker`: `Factor` giving unique identifier for the worker.
+- `Machine`: `Factor` with levels A, B, and C identifying machine brand.
+- `score`: Overall productivity score taking into account number and quality of components produced.
+
+Research question: Do the machines differ in their score?
+
+```{r, include=FALSE}
+library("tidyverse")
+```
+
+.pull-left[
+
+```{r, fig.height=4, dev='svg', echo=FALSE}
+ggplot(Machines, aes(x = Machine, y = score)) +
+  geom_point() + 
+  facet_wrap(~ Worker) + 
+  theme_light()
+```
+
+]
+
+--
+
+.pull-right[
+Fixed-effects model (without aggregation)
+
+```{r}
+mmach <- lm(score ~ Machine, Machines)
+car::Anova(mmach, type = 3)
+```
+
+
+]
+
+---
+
+## Example Data: Productivity Scores for Machines and Workers
+
+```{r}
+data("Machines", package = "MEMSS")
+```
+
+- `Worker`: `Factor` giving unique identifier for the worker.
+- `Machine`: `Factor` with levels A, B, and C identifying machine brand.
+- `score`: Overall productivity score taking into account number and quality of components produced.
+
+Research question: Do the machines differ in their score?
+
+```{r, include=FALSE}
+library("tidyverse")
+```
+
+.pull-left[
+
+Fixed-effects model (without aggregation)
+
+```{r}
+mmach <- lm(score ~ Machine, Machines)
+car::Anova(mmach, type = 3)
+```
+
+]
+
+
+.pull-right[
+
+Mixed-model
+
+```{r, warning=FALSE}
+m2 <- lmer(score~Machine+(Machine|Worker), Machines)
+car::Anova(m2, type = 3, test = "F")
+```
+
+
+]
 
 ---
 class: small
@@ -617,8 +826,8 @@ class: small
 ### Mixed Models in R: Follow-up Analyses
 
 ```{r}
-lsm.options(lmer.df = "asymptotic") # or "Kenward-Roger" or "Satterthwaite"
-lstrends(m_full, "rel_cond", var = "c_given_a")
+emm_options(lmer.df = "asymptotic") # or "Kenward-Roger" or "Satterthwaite"
+emtrends(m_full, "rel_cond", var = "c_given_a")
 ```
 
 ```{r}
@@ -630,6 +839,23 @@ fixef(m_full$full_model)[2] - fixef(m_full$full_model)[6] - fixef(m_full$full_mo
 More examples of interplay between `mixed` or `lmer` with `lsmeans`:
 - https://cran.r-project.org/package=afex/vignettes/afex_mixed_example.html
 - https://cran.r-project.org/package=lsmeans/vignettes/using-lsmeans.pdf
+
+---
+
+### Mixed Models in R: Follow-up Analyses
+
+```{r, message=FALSE}
+data("Machines", package = "MEMSS")
+mmach <- mixed(score~Machine+(Machine|Worker), Machines)
+mmach
+```
+
+
+```{r}
+pairs(emmeans(mmach, "Machine"))
+```
+
+
 
 ---
 class: small
@@ -740,7 +966,7 @@ gm1
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '+' 0.1 ' ' 1
 ## Warning messages: [...]
-lsmeans(gm1, "stimulus", type = "response")
+emmeans(gm1, "stimulus", type = "response")
 ##  stimulus   prob       SE df asymp.LCL asymp.UCL
 ##  word     0.9907 0.002323 NA    0.9849    0.9943
 ##  nonword  0.9857 0.003351 NA    0.9774    0.9909
