@@ -32,7 +32,7 @@ class: inline-grey
 # Summary: Analysis with Statistical Models in R
 
 1. Identify probability distribution of data (more correct: of residuals/conditional distribution)
-2. Make sure variables are of correct type via `str()`
+2. Make sure variables are of correct type via `str()` or `tibble::glimpse()`
 3. Set appropriate contrasts (orthogonal contrasts if model includes interaction): `afex::set_sum_contrasts()`
 4. Describe statistical model using `formula`
 4. Fit model: pass `formula` and `data.frame` to corresponding modeling function (e.g., `lm()`, `glm()`)
@@ -103,7 +103,7 @@ plot(sat.act$SATQ, sat.act$ACT)
 ```
 
 .pull-left[
-```{r, fig.height=3.5, fig.width=3.5, dev='svg', results='hide', message=FALSE, include=FALSE}
+```{r, fig.height=3.5, fig.width=3.5, dev='svg', results='hide', message=FALSE, include=FALSE, eval=FALSE}
 library("tidyverse")
 ggplot(sat.act, aes(x = ACT, y = SATV)) +
   geom_point() +
@@ -112,7 +112,7 @@ ggplot(sat.act, aes(x = ACT, y = SATV)) +
 ]
 
 .pull-right[
-```{r, fig.height=3.5, fig.width=3.5, dev='svg', include=FALSE}
+```{r, fig.height=3.5, fig.width=3.5, dev='svg', include=FALSE, eval=FALSE}
 ggplot(sat.act, aes(x = ACT, y = SATQ)) +
   geom_point() +
   theme_light()
@@ -260,10 +260,10 @@ class: small
 
 `R` modeling functions behave differently for numerical and categorical covariates. 
 
-It is important to always know of what type variables are. Use `str()` on a `data.frame` to obtain information regarding the structure, including variable types: 
+It is important to always know of what type variables are. Use `str()` on a `data.frame` (or `glimpse()` after loading the `tidyverse`) to obtain information regarding the structure, including variable types: 
 
 ```{r}
-str(sat.act)
+str(sat.act) ## alternatively tibble::glimpse(sat.act)
 ```
 
 - Numerical covariates are `int` or `num`.
@@ -660,7 +660,7 @@ class: small
 `afex::aov_car()` allows specification of ANOVA using formula, but requires specification of participant id in `Error()` term.
 
 ```{r, message=FALSE, comment='#'}
-require(afex)
+library("afex")
 sat.act$id <- factor(1:nrow(sat.act))
 (a1 <- aov_car(ACT ~ gender+Error(id), sat.act))
 
@@ -703,7 +703,162 @@ class: inline-grey
 - Three approaches for dealing with repeated-measures:
   1. *Complete pooling*: Ignore dependency in data (often not appropriate, results likely biased, not trustworthy)
   2. *No pooling*: Separate data based on factor producing dependency and calculate separate statistical model for each subset (combining results can be non-trivial)
-  3. *Partial pooling*: Analyse data jointly while taking dependency into account (gold standard, e.g., mixed models)
+  3. *Partial pooling*: Analyse data jointly while taking dependency into account (gold standard, e.g., mixed models, hierarchical models)
+
+---
+class: small
+
+### Complete Pooling
+- 1 set of parameters $\Theta$ for data *n*, usually aggregated across participants
+- Likelihood: $ln(L({\bf n} \mid \Theta))$
+- Easy to implement
+- Ignores individual variability
+
+--
+
+### No Pooling
+- 1 set of parameters $\Theta_i$ for each individual data set ${\bf n_i}$
+- Likelihood: $\sum_{i = 1}^N ln(L({\bf n_i} \mid \Theta_i))$
+- Requires considerable data on the individual level
+- Results sometimes not easy to combine
+
+--
+
+### Partial Pooling
+- 1 set of group-level parameters ${\hat \Theta}$ and 1 set of parameters $\Theta_i$ for each individual data set ${\bf n_i}$
+- Likelihood: $\sum_{i = 1}^N ln(L({\bf n_i} \mid \Theta_i, {\hat \Theta})) + ln(L(\Theta_i \mid {\hat \Theta}))$
+- Requires distributional assumption for group-level parameters (e.g., individual-level data normally distributed around group-level parameters)
+- Provides on average better estimates for both individual-level and group-level parameters (e.g., [Stein's paradox](https://en.wikipedia.org/wiki/Stein%27s_example))
+- Estimation can be difficult in a frequentist setting (therefore alternatively penalized or restricted maximum likelihood estimation)
+
+---
+class: small
+
+## Example Data: Productivity Scores for Machines and Workers
+
+```{r}
+data("Machines", package = "MEMSS")
+str(Machines)
+```
+
+- `Worker`: `Factor` giving unique identifier for the worker.
+- `Machine`: `Factor` with levels A, B, and C identifying machine brand.
+- `score`: Overall productivity score taking into account number and quality of components produced.
+
+Research question: Do the machines differ in their score?
+
+```{r, include=FALSE}
+library("tidyverse")
+```
+
+```{r}
+library("tidyverse")
+Machines %>% group_by(Machine) %>% 
+  summarise(m = mean(score), se = sd(score)/sqrt(n()))
+```
+
+
+---
+
+## Example Data: Productivity Scores for Machines and Workers
+
+```{r, fig.height=4, dev='svg'}
+ggplot(Machines, aes(x = Machine, y = score)) +
+  geom_point() + 
+  facet_wrap(~ Worker) + 
+  theme_light()
+```
+
+---
+
+## Productivity Scores for Machines and Workers: Complete Pooling
+
+
+.pull-left[
+(1) Aggregate data
+
+```{r}
+mach_agg <- Machines %>% 
+  group_by(Worker, Machine) %>% 
+  summarise(score = mean(score))
+```
+
+```{r, include=FALSE}
+ggplot(mach_agg, aes(x = Machine, y = score)) + geom_point()
+```
+
+(2) Estimate model
+
+```{r, message=FALSE}
+afex::set_sum_contrasts()
+mmach <- lm(score ~ Machine, mach_agg)
+car::Anova(mmach, type = 3)
+```
+]
+
+
+.pull-right[
+(3) Follow-up test
+
+```{r}
+library("emmeans")
+pairs(emmeans(mmach, "Machine"), 
+      adjust = "holm")
+```
+
+]
+---
+class: small
+
+## No Pooling
+
+(1) Select worker 1
+
+```{r}
+dm1 <- Machines %>% 
+  filter(Worker == "1")
+```
+
+(2) Estimate model for worker 1
+
+```{r}
+m1 <- lm(score ~ Machine, dm1)
+car::Anova(m1, type = 3)
+```
+
+(3) Record statistic of interest (e.g., *F*-value or *p*-value).  
+(4) Calculate statistic for other workers and record as well.  
+(5) Investigate distribution of statistics (e.g., all *p*-values smaller .05?).  
+
+---
+class: small
+
+## Partial-Pooling: Repeated-measures ANOVA
+
+```{r, warning=FALSE}
+a1 <- aov_car(score ~ Error(Worker/Machine), Machines)
+a1
+```
+
+.pull-left[
+```{r}
+pairs(emmeans(a1, "Machine"), 
+      adjust = "holm")
+```
+]
+
+--
+
+.pull-right[
+```{r}
+pairs(emmeans(mmach, "Machine"), 
+      adjust = "holm")  ## no pooling results
+```
+
+]
+
+
+
 
 ---
 class: small
@@ -720,46 +875,40 @@ class: small
 
 - Conditional = *if-then* statement; e.g., If global warning continues, London will be flooded.
 - Bayesian reasoning often assumes 'the Equation': *P*(if *A* then *B*) = *P*(*B*|*A*)
-- Our question: Does the Equation hold even if no apparent relationship between *A* and *B*? 
-  - positive relevance (PO): *A* is a reason for *B* 
-  - negative relevance (NE): *A* is a reason against *B* 
-  - irrelevance (IR): *A* and *B* have no apparent relationship 
+- Our question: Does the Equation hold? 
 
 - 348 participants recruited via `crowdflower.com` worked on 12 items:
   > Sophia's scenario: Sophia wishes to find a nice present for her 13-year-old son, Tim, for Christmas. She is running on a tight budget, but she knows that Tim loves participating in live role-playing in the forest and she is really skilled at sewing the orc costumes he needs. Unfortunately, she will not be able to afford the leather parts that such costumes usually have, but she will still be able to make them look nice.
 
 --
 
-  > Suppose Sophia buys a Barbie doll for Tim.   
+  > Suppose Sophia makes Tim an orc costume.
   > Under this assumption, how probable is it that the following sentence is true:   
   > Tim will be excited about his present.
 
 --
 
   > Could you please rate the probability that the following sentence is true:   
-  > IF Sophia buys a Barbie doll for Tim, THEN Tim will be excited about his present.
+  > IF Sophia makes Tim an orc costume, THEN he will be excited about his present.
 
 
 ---
 class: small
 
-### Skovgaard-Olsen et al. (2016)
+# Skovgaard-Olsen et al. (2016)
 
-- Does the Equation (i.e., *P*(if *A* then *B*) = *P*(*B*|*A*)) hold even if no apparent relationship between *A* and *B*? 
-  - positive relevance (PO): *A* is a reason for *B* 
-  - negative relevance (NE): *A* is a reason against *B* 
-  - irrelevance (IR): *A* and *B* have no apparent relationship 
+- Does the Equation (i.e., *P*(if *A* then *B*) = *P*(*B*|*A*)) hold? 
 
 - For each item, participants provide idiosyncratic estimates of *P*(if *A* then *B*) and *P*(*B*|*A*).
 - Each participant worked on 12 items, 4 per relevance condition (i.e., a 4 x 3 within-subjects design)
 
-- Data in the `exercises`folder (also available at: https://osf.io/j4swp/)
+- Data in the `exercises` folder (also available at: https://osf.io/j4swp/)
 
 --
 
-### Exercise 1: Analyse the data using the no-pooling approach.
-- Calculate the regression between *P*(if *A* then *B*) and *P*(*B*|*A*) separately for each participant and within-subjects condition.
-- Does this analysis yield some interpretable differences in the regression coefficients between the conditions?
+# Exercise 1: Analyse the data using the no-pooling approach.
+- Calculate the regression between *P*(if *A* then *B*) and *P*(*B*|*A*) separately for each participant.
+- Does this analysis suggest that there is an overall association between the two variables? If so, how strong is this relationship?
 - For precise instructions see: `exercises/exercise_1.Rmd`
 
 ---
