@@ -7,7 +7,10 @@ output: html_notebook
 
 - Conditional = *if-then* statement; e.g., If global warning continues, London will be flooded.
 - Bayesian reasoning often assumes 'the Equation': *P*(if *A* then *C*) = *P*(*C*|*A*)
-- Our question: Does the Equation hold? 
+- Our question: Does the Equation hold even if no apparent relationship between *A* and *C*? 
+  - positive relevance (PO): *A* is a reason for *C* 
+  - negative relevance (NE): *A* is a reason against *C* 
+  - irrelevance (IR): *A* and *C* have no apparent relationship 
 
 - 94 (of 348) participants recruited via `crowdflower.com` worked on 12 items.
 
@@ -17,40 +20,43 @@ output: html_notebook
 
 - Then we asked participant for their rating for the conditional probability *P*(*C*|*A*) on the probability scale from 0% to 100%:
 
-  > Suppose Sophia makes Tim an orc costume.
+  > Suppose Sophia buys a Barbie doll for Tim.   
   > Under this assumption, how probable is it that the following sentence is true:   
   > Tim will be excited about his present.
 
 - On the next page, we asked participant for their rating of the probability of the conditional *P*(if *A* then *C*) on the probability scale from 0% to 100%:
 
   > Could you please rate the probability that the following sentence is true:   
-  > IF Sophia makes Tim an orc costume, THEN he will be excited about his present.
+  > IF Sophia buys a Barbie doll for Tim, THEN Tim will be excited about his present.
 
 ### Design
 
-Research question: Does the Equation (i.e., *P*(if *A* then *C*) = *P*(*C*|*A*)) hold? 
+Research question: Does the Equation (i.e., *P*(if *A* then *C*) = *P*(*C*|*A*)) hold even if no apparent relationship between *A* and *C*? 
 
-Full design: 4 x 3. Both factors repeated-measures. Here we ignore
+Full design: 4 x 3. Both factors repeated-measures.
 
 For each item, participants provide idiosyncratic estimates of *P*(if *A* then *C*) (`dv`) and *P*(*C*|*A*) (`c_given_a`).  
-Each participant worked on 12 items, 12 estimates of *P*(*C*|*A*) (`c_given_a`).
+Each participant worked on 12 items, 4 estimates of *P*(*C*|*A*) (`c_given_a`) for each of 3 relevance conditions (`rel_cond`):
 
-For now, we ignore all other factors!
+- positive relavnce (PO): *A* is a reason for *C* (IF Sophia buys an orc costume for Tim, THEN Tim will be excited about his present.)
+- negative relevance (NE): *A* is a reason against *C* (IF Sophia buys a Barbie doll for Tim, THEN Tim will be excited about his present.) 
+- irrelevance (IR): *A* and *C* have no apparent relationship (IF Sophia regularly wears shoes, THEN Tim will be excited about his present.)
 
 Data available in the folder (also at: https://osf.io/j4swp/)
 
 ## Exercise 1: Analyse the data using the no-pooling approach.
-- Calculate the regression between *P*(if *A* then *C*) and *P*(*C*|*A*) separately for each participant.
-- Does this analysis suggest that there is an overall association between the two variables? If so, how strong is this relationship?
+- Calculate the regression between *P*(if *A* then *C*) and *P*(*C*|*A*) separately for each participant and within-subjects condition.
+- Does this analysis yield some interpretable differences in the regression coefficients between the conditions?
 
 ## Getting started:
 
-Don't forget to **restart R**: `Session` -> `Restart R`
-
 Some package we might need.
 ```{r, message=FALSE, warning=FALSE}
-library("tidyverse")
-library("broom") # not automatically loaded
+require(dplyr)
+require(tidyr)
+require(ggplot2)
+require(broom)
+
 ```
 
 I have already downloaded the data from the OSF and prepared it according to the descriptions found there. The prepared data is in `dat`.
@@ -59,7 +65,7 @@ I have already downloaded the data from the OSF and prepared it according to the
 # Run complete chunk: Ctrl+Shift+Enter
 
 # You might need to set the correct working directory via the menu: 
-# Session -> Set Working Directory -> To Source File Location
+# Session - Set Working Directory - To Source File Location
 
 afex::set_sum_contrasts() # just in case we set orthogonal contrasts
 
@@ -74,7 +80,7 @@ Variables in the data:
 - `i_id`: item identifier (i.e., id of vignette)
 - `CgivenA`: original *P*(*C*|*A*)
 - `DV`: original *P*(if *A* then *C*)
-- `rel_cond`: relevance condition with three levels. Within-subject variable (can be ignored)
+- `rel_cond`: relevance condition with three levels. Within-subject variable
 - `dv`: *P*(if *A* then *C*) centered at midpoint of scale (as used in paper)
 - `c_given_a`: *P*(*C*|*A*) centered at midpoint of scale (as used in paper)
 
@@ -87,20 +93,22 @@ summary(m0)
 
 When we completely ignore the dependencies in the data, we can see a clear relationship between the IV and DV. The regression parameter estimate for `c_given_a` is clearly significant (i.e., different from 0) but also not too far away from 1.0. If it were 1.0, this would mean that *P*(if *A* then *C*) = *P*(*C*|*A*) would hold exactly.
 
-Before the next step, let's take a look at the data. It suggests indeed that the relationship between IV and DV. But does it hold for the participants?
+Before the next step, let's take a look at the data. It suggests indeed that the relationship between IV and DV is stronger for PO then for the other conditions. But how does this fare across the between-subjects condition?
 
 ```{r, fig.width=7, fig.height=3}
 ggplot(data = dat) + 
   geom_point(mapping = aes(x = CgivenA, y = DV), alpha = 0.2, pch = 16) + 
+  facet_grid(. ~ rel_cond) + 
   coord_fixed()
 ```
 
 
 ## Full Instructions  
 
-- Your task is to calculate the regression parameter (i.e., slope, potentially also the intercept) for each participant (i.e., relationship of `dv` and `c_given_a` for each `p_id`).
-- Then investigate the distribution of resulting regression parameters. Perform this investigation in a graphical way and also statistically (i.e., using `lm`).
+- Your task is to calculate the regression parameter (and potentially also the intercept) for each participant and within-subject condition (i.e., relationship of `dv` and `c_given_a` for each `p_id` and `rel_cond`).
+- Then compare the individual regression parameters across conditions (i.e., `rel_cond` and `dv_question` combinations). Do this comparison in a graphical way and also statistically (i.e., ANOVA).
 - The goal of this exercise is to combine your knowledge of the `tidyverse` and use it to solve the aforementioned task.
+- I would suggest you use package `dplyr` and potentially `broom` or `tidyr` and `purrr`.
 - In case you need some inspiration for `tidyr` and `purr`, you might want to take a look at chapter 25 (especially 25.2.1, 25.2.2, 25.2.3) of Wickham and Grolemund (2017) see: http://r4ds.had.co.nz/many-models.html
 
 
