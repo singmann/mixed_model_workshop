@@ -2,7 +2,7 @@
 title: "Statistical Modeling in R"
 subtitle: "The Basics"
 author: "Henrik Singmann (University of Zurich)<br/>Twitter: <a href='https://twitter.com/HenrikSingmann'>@HenrikSingmann</a>"
-date: "November 2017"
+date: "June 2018"
 output:
   xaringan::moon_reader:
     css: ["default", "default-fonts", "my-theme.css"]
@@ -39,7 +39,7 @@ class: inline-grey
 4. Check model fit (e.g., inspect residuals)
 5. Test terms (i.e., main effects and interactions): Pass fitted model to `car::Anova()`
 7. Follow-up tests: 
-   - Estimated marginal means: Pass fitted model to `lsmeans::lsmeans()`/`emmeans::emmeans()`
+   - Estimated marginal means: Pass fitted model to `emmeans::emmeans()` (formerly:`lsmeans::lsmeans()`)
    - Specify specific contrasts on estimated marginal means (e.g., `contrast()`, `pairs()`)
 
 `afex` combines fitting (5.) and testing (7.):
@@ -101,6 +101,23 @@ par(mfrow=c(1,2))
 plot(sat.act$SATV, sat.act$ACT)
 plot(sat.act$SATQ, sat.act$ACT)
 ```
+
+.pull-left[
+```{r, fig.height=3.5, fig.width=3.5, dev='svg', results='hide', message=FALSE, include=FALSE}
+library("tidyverse")
+ggplot(sat.act, aes(x = ACT, y = SATV)) +
+  geom_point() +
+  theme_light()
+```
+]
+
+.pull-right[
+```{r, fig.height=3.5, fig.width=3.5, dev='svg', include=FALSE}
+ggplot(sat.act, aes(x = ACT, y = SATQ)) +
+  geom_point() +
+  theme_light()
+```
+]
 
 ---
 # Linear Regression Model
@@ -573,14 +590,14 @@ Anova(m6, type = 3)
 ---
 class: small, inline-grey
 
-# `lsmeans`/`emmeans` for Follow-Up/Post-Hoc Tests
+# `emmeans` for Follow-Up/Post-Hoc Tests
 
 .pull-left[
 ```{r, message=FALSE, warning=FALSE}
-library("lsmeans")      # or: library("emmeans")
-lsmeans(m6, ~education) # or: emmeans(m6, ~education)
+library("emmeans")      # or: library("emmeans")
+emmeans(m6, ~education) # or: emmeans(m6, ~education)
 ```
-`lsmeans` returns estimated marginal means (or least-square means for linear regression) for model terms (e.g., `lsmeans(m6, ~education*gender)`).
+`emmeans` returns estimated marginal means (or least-square means for linear regression) for model terms (e.g., `emmeans(m6, ~education*gender)`).
 
 One can specify arbitrary contrasts on marginal means (e.g., `contrast()`).
 
@@ -588,7 +605,7 @@ One can specify arbitrary contrasts on marginal means (e.g., `contrast()`).
 --
 .pull-right[
 ```{r, message=FALSE}
-pairs(lsmeans(m6,~education),adjust='holm')
+pairs(emmeans(m6,~education),adjust='holm')
 ```
 ]
 
@@ -662,7 +679,7 @@ sat_long <- tidyr::gather(
 ```{r, message=FALSE, comment='#'}
 (a2 <- aov_car(SAT_value ~ gender*SAT_type+
                  Error(id/SAT_type), sat_long))
-lsmeans(a2, c("gender", "SAT_type"))
+emmeans(a2, c("gender", "SAT_type"))
 ```
 
 ]

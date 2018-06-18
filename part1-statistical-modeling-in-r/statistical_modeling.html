@@ -15,7 +15,7 @@ class: center, middle, inverse, title-slide
 # Statistical Modeling in R
 ## The Basics
 ### Henrik Singmann (University of Zurich)<br/>Twitter: <a href='https://twitter.com/HenrikSingmann'><span class="citation">@HenrikSingmann</span></a>
-### November 2017
+### June 2018
 
 ---
 
@@ -36,7 +36,7 @@ class: inline-grey
 4. Check model fit (e.g., inspect residuals)
 5. Test terms (i.e., main effects and interactions): Pass fitted model to `car::Anova()`
 7. Follow-up tests: 
-   - Estimated marginal means: Pass fitted model to `lsmeans::lsmeans()`/`emmeans::emmeans()`
+   - Estimated marginal means: Pass fitted model to `emmeans::emmeans()` (formerly:`lsmeans::lsmeans()`)
    - Specify specific contrasts on estimated marginal means (e.g., `contrast()`, `pairs()`)
 
 `afex` combines fitting (5.) and testing (7.):
@@ -117,6 +117,14 @@ plot(sat.act$SATQ, sat.act$ACT)
 
 ![](statistical_modeling_files/figure-html/unnamed-chunk-2-1.svg)&lt;!-- --&gt;
 
+.pull-left[
+
+]
+
+.pull-right[
+
+]
+
 ---
 # Linear Regression Model
 
@@ -187,7 +195,7 @@ plot(sat.act$SATQ, sat.act$ACT)
 abline(m1)
 ```
 
-![](statistical_modeling_files/figure-html/unnamed-chunk-5-1.svg)&lt;!-- --&gt;
+![](statistical_modeling_files/figure-html/unnamed-chunk-7-1.svg)&lt;!-- --&gt;
 ]
 ---
 class: small
@@ -242,7 +250,7 @@ plot(sat.act$SATQ_c, sat.act$ACT)
 abline(m2)
 ```
 
-![](statistical_modeling_files/figure-html/unnamed-chunk-8-1.svg)&lt;!-- --&gt;
+![](statistical_modeling_files/figure-html/unnamed-chunk-10-1.svg)&lt;!-- --&gt;
 ]
 ---
 
@@ -368,8 +376,8 @@ str(sat.act)
 ##  $ SATQ     : int  500 500 470 520 550 640 500 560 600 800 ...
 ##  $ SATQ_c   : num  -110.2 -110.2 -140.2 -90.2 -60.2 ...
 ##  $ SATV_c   : num  -112.3 -12.3 -132.3 -62.3 -12.3 ...
-##  - attr(*, "na.action")=Class 'omit'  Named int [1:13] 130 197 248 364 376 419 498 515 523 581 ...
-##   .. ..- attr(*, "names")= chr [1:13] "31294" "32448" "33259" "35106" ...
+##  - attr(*, "na.action")= 'omit' Named int  130 197 248 364 376 419 498 515 523 581 ...
+##   ..- attr(*, "names")= chr  "31294" "32448" "33259" "35106" ...
 ```
 
 - Numerical covariates are `int` or `num`.
@@ -1005,17 +1013,17 @@ Anova(m6, type = 3)
 ---
 class: small, inline-grey
 
-# `lsmeans`/`emmeans` for Follow-Up/Post-Hoc Tests
+# `emmeans` for Follow-Up/Post-Hoc Tests
 
 .pull-left[
 
 ```r
-library("lsmeans")      # or: library("emmeans")
-lsmeans(m6, ~education) # or: emmeans(m6, ~education)
+library("emmeans")      # or: library("emmeans")
+emmeans(m6, ~education) # or: emmeans(m6, ~education)
 ```
 
 ```
-##  education lsmean     SE  df lower.CL upper.CL
+##  education emmean     SE  df lower.CL upper.CL
 ##  0          27.55 0.6357 675    26.30    28.80
 ##  1          27.21 0.7299 675    25.77    28.64
 ##  2          26.93 0.7268 675    25.50    28.35
@@ -1026,7 +1034,7 @@ lsmeans(m6, ~education) # or: emmeans(m6, ~education)
 ## Results are averaged over the levels of: gender 
 ## Confidence level used: 0.95
 ```
-`lsmeans` returns estimated marginal means (or least-square means for linear regression) for model terms (e.g., `lsmeans(m6, ~education*gender)`).
+`emmeans` returns estimated marginal means (or least-square means for linear regression) for model terms (e.g., `emmeans(m6, ~education*gender)`).
 
 One can specify arbitrary contrasts on marginal means (e.g., `contrast()`).
 
@@ -1035,7 +1043,7 @@ One can specify arbitrary contrasts on marginal means (e.g., `contrast()`).
 .pull-right[
 
 ```r
-pairs(lsmeans(m6,~education),adjust='holm')
+pairs(emmeans(m6,~education),adjust='holm')
 ```
 
 ```
@@ -1158,11 +1166,11 @@ sat_long &lt;- tidyr::gather(
 ```
 
 ```r
-lsmeans(a2, c("gender", "SAT_type"))
+emmeans(a2, c("gender", "SAT_type"))
 ```
 
 ```
-#  gender SAT_type lsmean    SE     df lower.CL upper.CL
+#  gender SAT_type emmean    SE     df lower.CL upper.CL
 #  male   SATV      612.2 6.458 1045.7    599.5    624.8
 #  female SATV      607.5 6.131  895.9    595.4    619.5
 #  male   SATQ      632.7 6.458 1045.7    620.0    645.3
