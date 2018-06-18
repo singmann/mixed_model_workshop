@@ -67,7 +67,26 @@ class: small
 
 ---
 
-## Tools: `RMarkdown` and `tidyverse`
+### Process and Tools: `tidyverse` and `RMarkdown`
+
+
+![](figures/data-science.png) 
+
+
+- `tidyverse`: Selection of packages curated/developed by `RStudio`:
+    - [`readr`](https://readr.tidyverse.org/): Reading data in, the `RStudio` way.
+    - Data wrangling with [`margrittr`](http://magrittr.tidyverse.org/), [`tibble`](http://tibble.tidyverse.org/), [`tidyr`](http://tidyr.tidyverse.org/), and [`dplyr`](http://dplyr.tidyverse.org/): Coherent set of functions for tidying, transforming, and working with rectangular data. Supersedes many base `R` functions and makes common problems easy. 
+    - [`ggplot2`](http://ggplot2.tidyverse.org/): System for data visualization.
+    - [`purr`](http://purrr.tidyverse.org/) and [`broom`](https://broom.tidyverse.org/): Advanced modeling with the `tidyverse`.
+
+--
+
+- `RMarkdown` "authoring framework for data science".
+
+---
+
+# `RMarkdown`
+
 
 - Context requires combination of a narrative/prose with data visualization and statistical results.
 - `RMarkdown` "authoring framework for data science".
@@ -76,18 +95,18 @@ class: small
     - `html` file
     - `pdf` or `Word` file
     - presentation (like this one)
-    - blog or other website (`blogdown`), books (`bookdown`), interactive tutorials (`learnr`), github document, [...](https://www.rstudio.com/resources/videos/r-markdown-eight-ways/)
+    - blog or other website (`blogdown`), books (`bookdown`), interactive tutorials (`learnr`), [...](https://www.rstudio.com/resources/videos/r-markdown-eight-ways/)
 - `RMarkdown` is efficient, easy to use, ensures reproducibility, and is ideal for communicating results with collaborators or even for writing papers (i.e., [`papaja`](https://github.com/crsh/papaja)).
 
 --
 
-- `tidyverse`
+- Warning: If you send an `RMarkdown` `html` report, it needs to be downloaded before figures are visible (e.g., opening it directly from `gmail` does not show plots)!
 
 ---
 
 ### `RMarkdown` Document Example ([source](http://rstudio-pubs-static.s3.amazonaws.com/202429_acbbe794b27f4dffaac6047d1b6d5aa0.html))
 
-![](RMarkdown-example.png)
+![](figures/RMarkdown-example.png)
 
 ---
 class:inline-grey, small
@@ -101,7 +120,7 @@ class:inline-grey, small
 --
 
 
-```eval
+```r
 ---
 title: "My Title"
 author: "Henrik Singmann"
@@ -120,7 +139,7 @@ output:
       - [output format](https://rmarkdown.rstudio.com/formats.html) (`html_document`, `pdf_document`, `word_document`, `github_document`, ...)
       - add and format table of content
       - appearance (also add custom `css`)
-      - see: https://rmarkdown.rstudio.com/html_document_format.html
+      - see [`RMarkdown` cheat sheet](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) or https://rmarkdown.rstudio.com/html_document_format.html
 
 ---
 class: small
@@ -128,7 +147,7 @@ class: small
 ### Text Formatting 
 
 .pull-left[
-![](ch-02-markdown-margin.png)
+![](figures/ch-02-markdown-margin.png)
 
 `[link](www.rstudio.com)` -&gt; [link](www.rstudio.com)
 
@@ -139,8 +158,198 @@ class: small
 
 
 ---
+class: small
 
-## Code Formatting
+![](figures/markdownChunk2.png)
+
+---
+
+### Code Chunks
+
+````
+```{r chunk_name, echo=FALSE}
+1 + 1
+```
+````
+
+
+```
+## [1] 2
+```
+
+- Run a code chunk with `Ctrl`/`Cmd` + `Shift` + `Enter`
+
+Important chunk options:
+- `echo`: Display code in output document (default = `TRUE`)
+- `eval`: Run code in chunk (default = `TRUE`)
+- `include`: Include chunk in doc after running (default = `TRUE`)
+- `fig.height` and `fig.width`: Dimensions of plots in inches
+- `error`: Display error messages in doc (`TRUE`) or stop render when errors occur (`FALSE`) (default = `FALSE`)
+- `warning`: display code warnings in document (default = `TRUE`)
+- `results`: How to format results:
+  - default = `'markup'`
+  - `'asis'` - passthrough results
+  - `'hide'` - do not display results
+  - `'hold'` - put all results below all code
+- `cache`: cache results for future knits (default = `FALSE`)
+
+--
+
+Try replacing `summary(cars)` with `knitr::kable(summary(cars))`
+
+---
+class: small, inline-grey
+
+- visit: [`https://github.com/singmann/mixed_model_workshop`](https://github.com/singmann/mixed_model_workshop)
+
+![](figures/github-workshop.png)
+
+
+---
+class: inline-grey
+
+## Workshop Materials
+
+- `zip` Archive contains all materials (e.g., slides, code, exercises) of the current workshop
+- Extract `zip` archive if necessary
+- All slides are built using `RMarkdown` and `xaringan` package.
+- `part0-introduction` materials for introduction session (these slides).
+-  `part1-statistical-modeling-in-r` materials for statistical modeling session.
+- `part2-mixed-models-in-r` materials for mixed models session.
+- In each folder:
+  - `.Rmd` file is the `RMarkdown` containing text and code for the slides.
+  - You can follow the presentation by following this file. Don't forget: run a code chunk with `Ctrl`/`Cmd` + `Shift` + `Enter`
+  - `.html` is the full presentation you are seeing. After opening, press `h` for help.
+  - If available, `.R` file contains only the code, without additional slide text.
+- `exercises` contains some exercises.
+- `handout` contains the handout (also includes the `RMarkdown` file)
+
+---
+class: center, middle, inverse
+
+# `tidyverse`
+
+---
+class: small
+
+.pull-left[
+### `tibble`
+
+- **tibble** or `tbl_df` is a "modern reimagining of the data.frame, keeping what time has proven to be effective, and throwing out what is not."
+- Dramtically enhanced `print` method.
+- Does not change `strings` to `factors`.
+- Complains when a variable is missing (i.e., no partial matching).
+- Allows list columns (with nice printing).
+
+
+```r
+iris
+```
+
+
+```
+##   Sepal.Length Sepal.Width Petal.Length
+## 1          5.1         3.5          1.4
+## 2          4.9         3.0          1.4
+## 3          4.7         3.2          1.3
+## 4          4.6         3.1          1.5
+## 5          5.0         3.6          1.4
+```
+
+[...]
+
+
+```r
+iris$Spec
+```
+
+```
+##   [1] setosa     setosa     setosa     setosa    
+##   [5] setosa     setosa     setosa     setosa    
+##   [9] setosa     setosa     setosa     setosa    
+##  [13] setosa     setosa     setosa     setosa    
+##  [17] setosa     setosa     setosa     setosa    
+##  [21] setosa     setosa     setosa     setosa    
+##  [25] setosa     setosa     setosa     setosa    
+##  [29] setosa     setosa     setosa     setosa    
+##  [33] setosa     setosa     setosa     setosa    
+##  [37] setosa     setosa     setosa     setosa    
+##  [41] setosa     setosa     setosa     setosa    
+##  [45] setosa     setosa     setosa     setosa    
+##  [49] setosa     setosa     versicolor versicolor
+##  [53] versicolor versicolor versicolor versicolor
+##  [57] versicolor versicolor versicolor versicolor
+##  [61] versicolor versicolor versicolor versicolor
+##  [65] versicolor versicolor versicolor versicolor
+##  [69] versicolor versicolor versicolor versicolor
+##  [73] versicolor versicolor versicolor versicolor
+##  [77] versicolor versicolor versicolor versicolor
+##  [81] versicolor versicolor versicolor versicolor
+##  [85] versicolor versicolor versicolor versicolor
+##  [89] versicolor versicolor versicolor versicolor
+##  [93] versicolor versicolor versicolor versicolor
+##  [97] versicolor versicolor versicolor versicolor
+## [101] virginica  virginica  virginica  virginica 
+## [105] virginica  virginica  virginica  virginica 
+## [109] virginica  virginica  virginica  virginica 
+## [113] virginica  virginica  virginica  virginica 
+## [117] virginica  virginica  virginica  virginica 
+## [121] virginica  virginica  virginica  virginica 
+## [125] virginica  virginica  virginica  virginica 
+## [129] virginica  virginica  virginica  virginica 
+## [133] virginica  virginica  virginica  virginica 
+## [137] virginica  virginica  virginica  virginica 
+## [141] virginica  virginica  virginica  virginica 
+## [145] virginica  virginica  virginica  virginica 
+## [149] virginica  virginica 
+## Levels: setosa versicolor virginica
+```
+]
+
+--
+
+.pull-right[
+
+```r
+library("tibble") 
+iris2 &lt;- as_tibble(iris)
+iris2
+```
+
+```
+## # A tibble: 150 x 5
+##    Sepal.Length Sepal.Width Petal.Length
+##           &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;
+##  1          5.1         3.5          1.4
+##  2          4.9         3            1.4
+##  3          4.7         3.2          1.3
+##  4          4.6         3.1          1.5
+##  5          5           3.6          1.4
+##  6          5.4         3.9          1.7
+##  7          4.6         3.4          1.4
+##  8          5           3.4          1.5
+##  9          4.4         2.9          1.4
+## 10          4.9         3.1          1.5
+## # ... with 140 more rows, and 2 more variables:
+## #   Petal.Width &lt;dbl&gt;, Species &lt;fct&gt;
+```
+
+```r
+iris2$Spec
+```
+
+```
+## Warning: Unknown or uninitialised column: 'Spec'.
+```
+
+```
+## NULL
+```
+
+]
+
+
+
 
 ---
 
