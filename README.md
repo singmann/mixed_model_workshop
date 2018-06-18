@@ -17,7 +17,7 @@ In addition, the repo contains a [`pdf` handout](https://github.com/singmann/mix
 
 ### Requirements
 - A recent version of `R` (currently `R 3.5.0`): `https://cran.rstudio.com/`
-- `R` packages necessary for the analysis (install with `install.packages("package")` at `R` prompt): `afex` (which automatically installs the additional requirements `emmeans`, `lme4`, and `car`), `psych` (for example data)
+- `R` packages necessary for the analysis (install with `install.packages("package")` at `R` prompt): `afex` (which automatically installs the additional requirements `emmeans`, `lme4`, and `car`) and `psych` and `MEMSS` (for example data)
 - `R` package `tidyverse` for the exercises (we mainly need `dplyr`, `broom`, `tidyr`, `purrr`, and `ggplot2`).
 - `R` package `xaringan` to compile the slides.
 - `R` package `sjstats` for Intraclass Correlation Coefficient (ICC)

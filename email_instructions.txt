@@ -7,6 +7,7 @@ Please note that both R and RStudio need to be updated independently and older v
 
 After updating both R and RStudio, please install the following R packages [e.g., via install.packages("package")]:
 afex
+MEMSS
 psych
 tidyverse
 xaringan
