@@ -475,10 +475,6 @@ iris2 %&gt;%
 ]
 
 
----
-
-### `dplyr` Exercise
-
 
 ---
 
@@ -521,6 +517,33 @@ ggplot(iris2, aes(x = Species, y = Petal.Length)) +
 
 ---
 
+## Summary
+
+![](figures/data-science.png) 
+
+- Data analysis and statistics are iterative processes.
+- Goal of statistics is to support arguments connecting empirical data and substantive research questions.
+
+### `tidyverse`
+- Selection of packages providing a unified approach and syntax to common data analysis problems. 
+- To learn more about the `tidyverse` check out the free "R for Data Science" book by Wickham &amp; Grolemund
+
+### `RMarkdown`
+- Allows combining prose, code, and output into one nicely formatted document. 
+- Great for communicating results and ensuring reproducibility.
+
+---
+
+### Exercise
+
+- Open `exercises/exercise_0.Rmd`
+- Follow text and try to solve a few small tasks helping you to get comfortable with the `tidyverse`.
+- Main goal is getting comfortable with `dplyr` and `ggplot2` syntax.
+- Exercise uses response time data from Freeman, Heathcote, Chalmers, and Hockley (2010).
+- Participants did a lexical-decision task or a naming task.
+
+---
+
 ###  Links
 - `RStudio` cheat sheets: https://www.rstudio.com/resources/cheatsheets/
     - `RStudio`: https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf
@@ -533,39 +556,6 @@ ggplot(iris2, aes(x = Species, y = Petal.Length)) +
 - Data Visualization: A practical introduction: http://socviz.co/
 - Exploratory Data Analysis with R: https://bookdown.org/rdpeng/exdata/
 - The Art of Data Science: https://bookdown.org/rdpeng/artofdatascience/
-
----
-class: small
-
-### Skovgaard-Olsen et al. (2016)
-
-- Does the Equation (i.e., *P*(if *A* then *B*) = *P*(*B*|*A*)) hold even if no apparent relationship between *A* and *B*? 
-  - positive relevance (PO): *A* is a reason for *B* 
-  - negative relevance (NE): *A* is a reason against *B* 
-  - irrelevance (IR): *A* and *B* have no apparent relationship 
-
-- For each item, participants provide idiosyncratic estimates of *P*(if *A* then *B*) and *P*(*B*|*A*).
-- Each participant worked on 12 items, 4 per relevance condition (i.e., a 4 x 3 within-subjects design)
-
-- Data in the `exercises`folder (also available at: https://osf.io/j4swp/)
-
---
-
-### Exercise 1: Analyse the data using the no-pooling approach.
-- Calculate the regression between *P*(if *A* then *B*) and *P*(*B*|*A*) separately for each participant and within-subjects condition.
-- Does this analysis yield some interpretable differences in the regression coefficients between the conditions?
-- For precise instructions see: `exercises/exercise_1.Rmd`
-
----
-### References Statistical Modeling:
-- John Fox and Sanford Weisberg (2011). *An R Companion to Applied Regression, Second Edition.* Thousand Oaks CA: Sage. URL: http://socserv.socsci.mcmaster.ca/jfox/Books/Companion
-- Russell V. Lenth (2016). Least-Squares Means: The R Package lsmeans. *Journal of Statistical
-  Software*, 69(1), 1-33. https://doi.org/10.18637/jss.v069.i01
-- Cohen, J., Cohen, P., West, S. G., &amp; Aiken, L. S. (2002). *Applied Multiple Regression/Correlation Analysis for the Behavioral Sciences.* New York: Routledge Academic.
-
-### References Example Data:
-- Revelle, William, Wilt, Joshua, and Rosenthal, Allen (2009) Personality and Cognition: The Personality-Cognition Link. In Gruszka, Alexandra and Matthews, Gerald and Szymura, Blazej (Eds.) _Handbook of Individual Differences in Cognition: Attention, Memory and Executive Control_, Springer.
-- Skovgaard-Olsen, N., Singmann, H., &amp; Klauer, K. C. (2016). The relevance effect and conditionals. *Cognition*, 150, 26-36. https://doi.org/10.1016/j.cognition.2015.12.017
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({

@@ -113,7 +113,7 @@ Let us take a look at the individual-level data per length level that you just c
 
 ### Part C
 
-Make a plot similar as above, but this time also condition on the `density` factor. That is, first aggregate the data again, this time for the combination of `id`, `length`, and `density`. Then plot the data as above, but also add an aesthetic for the `density` factor. Use `color` to distinguish the different levels of `density` in the plot. Can you see something in this plot?
+Make a plot similar as above, but this time also condition on the `density` factor. That is, first aggregate the data again, this time for the combination of `id`, `length`, and `density`. Then plot the data as above, but also add an aesthetic for the `density` factor. Use `color` to distinguish the different levels of `density` in the plot. Can you see something in this plot? If not, have a look at `position_dodge` with `geom_point`.
 
 
 ```{r}
@@ -127,5 +127,9 @@ Make a plot similar as above, but this time also condition on the `density` fact
     - `RStudio`: https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf
     - `ggplot2`: https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf
     - `dplyr` & `tidyr`: https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf
+
+## References
+
+- Freeman, E., Heathcote, A., Chalmers, K., & Hockley, W. (2010). Item effects in recognition memory for words. *Journal of Memory and Language*, 62(1), 1-18. https://doi.org/10.1016/j.jml.2009.09.004
 
 

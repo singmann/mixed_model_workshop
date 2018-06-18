@@ -15,13 +15,13 @@ The `task` was a between subjects factor: 25 participants worked on the lexical 
 
 ### Design
 
-The data comes with package `afex`, so we can load it right away.
+The data comes with package `afex`, so we can load it right away. We also load `tidyverse` to attach all the packages we will need.
 
 ```{r}
 data("fhch2010", package = "afex") # load 
 fhch <- droplevels(fhch2010[ fhch2010$correct,]) # remove errors
 str(fhch) # structure of the data
-
+library("tidyverse")
 ```
 
 The columns in the data are:
@@ -130,7 +130,7 @@ ggplot(agg1, aes(x = length, y = mrt)) +
 
 ### Part C
 
-Make a plot similar as above, but this time also condition on the `density` factor. That is, first aggregate the data again, this time for the combination of `id`, `length`, and `density`. Then plot the data as above, but also add an aesthetic for the `density` factor. Use `color` to distinguish the different levels of `density` in the plot. Can you see something in this plot?
+Make a plot similar as above, but this time also condition on the `density` factor. That is, first aggregate the data again, this time for the combination of `id`, `length`, and `density`. Then plot the data as above, but also add an aesthetic for the `density` factor. Use `color` to distinguish the different levels of `density` in the plot. Can you see something in this plot? If not, have a look at `position_dodge` with `geom_point`.
 
 
 ```{r}
@@ -144,6 +144,14 @@ ggplot(agg2, aes(x = length, y = mrt, color = density, group = density)) +
 
 ```
 
+```{r}
+ggplot(agg2, aes(x = length, y = mrt, color = density, group = density)) +
+  geom_point(position = position_dodge(0.25), alpha = 0.5) +
+  stat_summary(position = position_dodge(0.25)) +
+  theme_light()
+
+```
+
 
 ## Ressources
 
@@ -151,5 +159,9 @@ ggplot(agg2, aes(x = length, y = mrt, color = density, group = density)) +
     - `RStudio`: https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf
     - `ggplot2`: https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf
     - `dplyr` & `tidyr`: https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf
+
+## References
+
+- Freeman, E., Heathcote, A., Chalmers, K., & Hockley, W. (2010). Item effects in recognition memory for words. *Journal of Memory and Language*, 62(1), 1-18. https://doi.org/10.1016/j.jml.2009.09.004
 
 
