@@ -75,7 +75,7 @@ class: small
 
 - `tidyverse`: Selection of packages curated/developed by `RStudio`:
     - [`readr`](https://readr.tidyverse.org/): Reading data in, the `RStudio` way.
-    - Data wrangling with [`margrittr`](http://magrittr.tidyverse.org/), [`tibble`](http://tibble.tidyverse.org/), [`tidyr`](http://tidyr.tidyverse.org/), and [`dplyr`](http://dplyr.tidyverse.org/): Coherent set of functions for tidying, transforming, and working with rectangular data. Supersedes many base `R` functions and makes common problems easy. 
+    - Data wrangling with [`tibble`](http://tibble.tidyverse.org/), [`magrittr`](http://magrittr.tidyverse.org/), [`tidyr`](http://tidyr.tidyverse.org/), and [`dplyr`](http://dplyr.tidyverse.org/): Coherent set of functions for tidying, transforming, and working with rectangular data. Supersedes many base `R` functions and makes common problems easy. 
     - [`ggplot2`](http://ggplot2.tidyverse.org/): System for data visualization.
     - [`purr`](http://purrr.tidyverse.org/) and [`broom`](https://broom.tidyverse.org/): Advanced modeling with the `tidyverse`.
 
@@ -235,7 +235,7 @@ class: small
 .pull-left[
 ### `tibble`
 
-- **tibble** or `tbl_df` is a "modern reimagining of the data.frame, keeping what time has proven to be effective, and throwing out what is not."
+- "**tibble** or `tbl_df` is a modern reimagining of the data.frame, keeping what time has proven to be effective, and throwing out what is not."
 - Dramtically enhanced `print` method.
 - Does not change `strings` to `factors`.
 - Complains when a variable is missing (i.e., no partial matching).
@@ -348,8 +348,176 @@ iris2$Spec
 
 ]
 
+---
+class:inline-grey
+
+## `magrittr`  &lt;img src="figures/magrittr.png" style="width: 10%" align="right" /&gt;
+
+- Pipe operator `%&gt;%` makes code more readable:
+  - structuring sequences of data operations left-to-right (as opposed to from the inside and out)
+  - avoiding nested function calls,
+  - minimizing need for local variables and function definitions.
+-  Add pipe with `Ctrl`/`Cmd` +`Shift` + `m` 
+
+.pull-left[
+### Pipe
 
 
+```r
+x %&gt;% f
+x %&gt;% f(y)
+x %&gt;% f %&gt;% g %&gt;% h
+
+x %&gt;% f(y, .)
+x %&gt;% f(y, z = .)
+```
+
+]
+
+.pull-right[
+### Base R
+
+```r
+f(x)
+f(x, y)
+h(g(f(x)))
+
+f(y, x)
+f(y, z = x)
+```
+
+]
+
+--
+
+Try it out:
+
+```r
+library(magrittr)
+iris2$Sepal.Length %&gt;% 
+  mean
+```
+
+---
+class: small
+
+### Tidy data (`tidyr`)
+
+*"Tidy datasets are all alike, but every messy dataset is messy in its own way." -- Hadley Wickham*
+
+1. Put each data set in a `tibble`.
+2. Put each variable in a column.
+    1. Each variable must have its own column.
+    2. Each observation must have its own row.
+    3. Each value must have its own cell.
+![](figures/tidy-1.png)
+--
+
+- For psychologists: Transform wide into long data. See also: 
+- Wickham, H. (2014). [Tidy data. *The Journal of Statistical Software*, 59(10). http://www.jstatsoft.org/v59/i10
+- Wickham, H., &amp; Grolemund, G. (2017). R for Data Science (ch. 12). http://r4ds.had.co.nz/tidy-data.html
+
+---
+
+### `dplyr`
+
+- grammar of data manipulation, providing a consistent set of verbs that help you solve the most common data manipulation challenges:
+  - `mutate()` adds new variables that are functions of existing variables
+  - `select()` picks variables based on their names.
+  - `filter()` picks cases based on their values.
+  - `summarise()` reduces multiple values down to a single summary.
+  - `arrange()` changes the ordering of the rows.
+- All combine naturally with `group_by()` which allows performing any operation "by group".
+
+--
+
+.pull-left[
+
+```r
+library("dplyr")
+iris2 %&gt;% 
+  filter(Species == "setosa") %&gt;% 
+  summarise_if(is.numeric, mean)
+```
+
+```
+## # A tibble: 1 x 4
+##   Sepal.Length Sepal.Width Petal.Length
+##          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;
+## 1         5.01        3.43         1.46
+## # ... with 1 more variable: Petal.Width &lt;dbl&gt;
+```
+
+]
+
+--
+
+.pull-right[
+
+
+```r
+iris2 %&gt;%
+  group_by(Species) %&gt;% 
+  summarise(mean_l = mean(Sepal.Length),
+            max_l = max(Sepal.Length),
+            min_l = min(Sepal.Length),
+            sd_l = sd(Sepal.Length))
+```
+
+```
+## # A tibble: 3 x 5
+##   Species    mean_l max_l min_l  sd_l
+##   &lt;fct&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 setosa       5.01   5.8   4.3 0.352
+## 2 versicolor   5.94   7     4.9 0.516
+## 3 virginica    6.59   7.9   4.9 0.636
+```
+]
+
+
+---
+
+### `dplyr` Exercise
+
+
+---
+
+### `ggplot2`
+
+- System for declaratively creating graphics, based on "The Grammar of Graphics" by Leland Wilkinson
+- "You provide data, tell `ggplot2` how to map variables to aesthetics what graphical primitives to use, and it takes care of the details."
+- `ggplot()` is the basic function which takes the data.
+- `aes()` is used for mapping aesthetics.
+- `geom_...` tells which primitive to use. 
+
+
+```r
+library("ggplot2")
+ggplot(iris2, aes(x = Petal.Width, y = Petal.Length)) +
+  geom_point()
+```
+--
+
+
+```r
+ggplot(iris2, aes(x = Petal.Width, y = Petal.Length, color = Species)) +
+  geom_point()
+```
+--
+
+
+
+```r
+ggplot(iris2, aes(x = Species, y = Petal.Length)) +
+  geom_jitter(width = 0.2) +
+  geom_boxplot(fill = "transparent") +
+  theme_bw()
+```
+--
+
+- Learning `ggplot2`:
+  - R for Data Science, http://r4ds.had.co.nz/, ch. 3 and ch. 28
+  - `ggplot2` cheat sheet: https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf
 
 ---
 

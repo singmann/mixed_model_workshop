@@ -271,9 +271,150 @@ iris2$Spec
 ]
 
 ---
+class:inline-grey
 
-### `magrittr`
+## `magrittr`  <img src="figures/magrittr.png" style="width: 10%" align="right" />
 
+- Pipe operator `%>%` makes code more readable:
+  - structuring sequences of data operations left-to-right (as opposed to from the inside and out)
+  - avoiding nested function calls,
+  - minimizing need for local variables and function definitions.
+-  Add pipe with `Ctrl`/`Cmd` +`Shift` + `m` 
+
+.pull-left[
+### Pipe
+
+```{r, eval=FALSE}
+x %>% f
+x %>% f(y)
+x %>% f %>% g %>% h
+
+x %>% f(y, .)
+x %>% f(y, z = .)
+```
+
+]
+
+.pull-right[
+### Base R
+```{r, eval=FALSE}
+f(x)
+f(x, y)
+h(g(f(x)))
+
+f(y, x)
+f(y, z = x)
+```
+
+]
+
+--
+
+Try it out:
+```{r, eval=FALSE}
+library(magrittr)
+iris2$Sepal.Length %>% 
+  mean
+```
+
+---
+class: small
+
+### Tidy data (`tidyr`)
+
+*"Tidy datasets are all alike, but every messy dataset is messy in its own way." -- Hadley Wickham*
+
+1. Put each data set in a `tibble`.
+2. Put each variable in a column.
+    1. Each variable must have its own column.
+    2. Each observation must have its own row.
+    3. Each value must have its own cell.
+![](figures/tidy-1.png)
+--
+
+- For psychologists: Transform wide into long data. See also: 
+- Wickham, H. (2014). [Tidy data. *The Journal of Statistical Software*, 59(10). http://www.jstatsoft.org/v59/i10
+- Wickham, H., & Grolemund, G. (2017). R for Data Science (ch. 12). http://r4ds.had.co.nz/tidy-data.html
+
+---
+
+### `dplyr`
+
+- grammar of data manipulation, providing a consistent set of verbs that help you solve the most common data manipulation challenges:
+  - `mutate()` adds new variables that are functions of existing variables
+  - `select()` picks variables based on their names.
+  - `filter()` picks cases based on their values.
+  - `summarise()` reduces multiple values down to a single summary.
+  - `arrange()` changes the ordering of the rows.
+- All combine naturally with `group_by()` which allows performing any operation "by group".
+
+--
+
+.pull-left[
+```{r, message=FALSE}
+library("dplyr")
+iris2 %>% 
+  filter(Species == "setosa") %>% 
+  summarise_if(is.numeric, mean)
+```
+
+]
+
+--
+
+.pull-right[
+
+```{r}
+iris2 %>%
+  group_by(Species) %>% 
+  summarise(mean_l = mean(Sepal.Length),
+            max_l = max(Sepal.Length),
+            min_l = min(Sepal.Length),
+            sd_l = sd(Sepal.Length))
+```
+]
+
+
+---
+
+### `dplyr` Exercise
+
+
+---
+
+### `ggplot2`
+
+- System for declaratively creating graphics, based on "The Grammar of Graphics" by Leland Wilkinson
+- "You provide data, tell `ggplot2` how to map variables to aesthetics what graphical primitives to use, and it takes care of the details."
+- `ggplot()` is the basic function which takes the data.
+- `aes()` is used for mapping aesthetics.
+- `geom_...` tells which primitive to use. 
+
+```{r, eval=FALSE}
+library("ggplot2")
+ggplot(iris2, aes(x = Petal.Width, y = Petal.Length)) +
+  geom_point()
+```
+--
+
+```{r, eval=FALSE}
+ggplot(iris2, aes(x = Petal.Width, y = Petal.Length, color = Species)) +
+  geom_point()
+```
+--
+
+
+```{r, eval=FALSE}
+ggplot(iris2, aes(x = Species, y = Petal.Length)) +
+  geom_jitter(width = 0.2) +
+  geom_boxplot(fill = "transparent") +
+  theme_bw()
+```
+--
+
+- Learning `ggplot2`:
+  - R for Data Science, http://r4ds.had.co.nz/, ch. 3 and ch. 28
+  - `ggplot2` cheat sheet: https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf
 
 ---
 
