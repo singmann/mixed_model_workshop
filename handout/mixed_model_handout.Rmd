@@ -1,7 +1,7 @@
 ---
-title: "Statistical Models for Dependent Data: Handout"
+title: "Mixed Models in R - A Practical Introduction"
 author: "Henrik Singmann"
-date: "November 2017"
+date: "June 2018"
 output: pdf_document
 ---
 
@@ -62,8 +62,8 @@ knitr::opts_chunk$set(echo = TRUE)
     + Complete cross-over interactions (i.e., main effects in presence of interaction) possible.
 - Type II are more appropriate if imbalance is structural (i.e., observational data; maybe here).
 
-### Follow-up Tests with `lsmeans`/`emmeans`
-- `lsmeans(model, ~factor)`/`emmeans(model, ~factor)`  produces estimates marginal means (or least-square means for linear regression) for model terms (e.g., `lsmeans(m6, ~education*gender)`).
+### Follow-up Tests with `emmeans` (Formerly `lsmeans`)
+- `emmeans(model, ~factor)`  produces estimates marginal means (or least-square means for linear regression) for model terms (e.g., `emmeans(m6, ~education*gender)`).
 - Additional functions allow specifying contrasts/follow-up tests on the means, e.g.:
     + `pairs()` tests all pairwise comparisons among means.
     + `contrast()` allows to define arbitrary contrasts on marginal means.
