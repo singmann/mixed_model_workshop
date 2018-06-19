@@ -25,6 +25,7 @@ str(fhch) # structure of the data
 ```
 
 The columns in the data are:
+
 - `id`: participant id, `factor`
 - `task`: `factor` with two levels indicating which task was performed: `"naming"` or `"lexdec"`
 - `stimulus`: `factor` indicating whether the shown stimulus was a `"word"` or `"nonword"`
@@ -46,6 +47,7 @@ For this and the following exercises use the `fhch` `data.frame` (i.e., the data
 Use your knowledge of `dplyr` in combination with the pipe `%>%` and take the `mean` of the `rt` column, conditional on `task`. For which task are participants on average faster?
 
 Hints:
+
 - `group_by` can be used for conditioning on one or several variables. Separate more than one variable by comma.
 - `summarise` can be used for aggregating multiple lines into one.
 - The pipe `%>%` allows to concatenate calls from left to right.
@@ -98,6 +100,7 @@ Note that to condition on more than one variable in `group_by()`, simply separat
 ### Part B
 
 Let us take a look at the individual-level data per length level that you just created. For this, use `ggplot` and plot the level of `length` on the x-axis and the mean RTs on the y-axis. 
+
 - Try both `geom_point` and  `geom_jitter()`. Which looks better?
 - Does this plot show any clear pattern?
 - Can you think of a way to make this plot more informative?
