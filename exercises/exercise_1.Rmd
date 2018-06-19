@@ -101,7 +101,7 @@ ggplot(data = dat) +
 - Your task is to calculate the regression parameter (i.e., slope, potentially also the intercept) for each participant (i.e., relationship of `dv` and `c_given_a` for each `p_id`).
 - Then investigate the distribution of resulting regression parameters. Perform this investigation in a graphical way and also statistically (i.e., using `lm`).
 - The goal of this exercise is to combine your knowledge of the `tidyverse` and use it to solve the aforementioned task.
-- In case you need some inspiration for `tidyr` and `purr`, you might want to take a look at chapter 25 (especially 25.2.1, 25.2.2, 25.2.3) of Wickham and Grolemund (2017) see: http://r4ds.had.co.nz/many-models.html
+- In case you need some inspiration for `dplyr` and `broom`, you might want to take a look at chapter 25 (especially 25.2.1, 25.2.2, 25.2.3) of Wickham and Grolemund (2017) see: http://r4ds.had.co.nz/many-models.html
 
 
 ```{r}
