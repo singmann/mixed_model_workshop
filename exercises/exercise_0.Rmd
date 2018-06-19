@@ -7,7 +7,7 @@ output: html_notebook
 
 The data are lexical decision and word naming latencies for 300 words and 300 nonwords from 45 participants presented in Freeman et al. (2010). The 300 items in each `stimulus` condition were selected to form a balanced $2 \times 2$ design with factors neighborhood `density` (low versus high) and `frequency` (low versus high). 
 
-The `task` was a between subjects factor: 25 participants worked on the lexical decision task and 20 participants on the naming task. After excluding erroneous responses each participants responded to between 135 and 150 words and between 124 and 150 nonwords. We analyzed log RTs which showed an approximately normal picture. 
+The `task` was a between subjects factor: 25 participants worked on the lexical decision task and 20 participants on the naming task. After excluding erroneous responses each participants responded to between 135 and 150 words and between 124 and 150 nonwords.
 
 - Lexical decision task: Decide whether a string of letters presented on screen is a word (e.g., house) or a non-word (e.g., huese). Response times were recorded when participants pressed the corresponding response key (i.e., word or non-word).
 - Naming task: Read the word presented in the screen. Response times were recorded when participants started saying the presented word.
@@ -22,7 +22,6 @@ library("tidyverse")
 data("fhch2010", package = "afex") # load 
 fhch <- droplevels(fhch2010[ fhch2010$correct,]) # remove errors
 str(fhch) # structure of the data
-
 ```
 
 The columns in the data are:
@@ -61,7 +60,7 @@ Hints:
 
 ### Part B
 
-`summarise` allows to use more than one aggregation function. Extend the previous code and also calculate the standard deviation, `sd()`, per task. Does the task that is faster also has th elower variability in RT (i.e., smaller sd)?
+`summarise` allows to use more than one aggregation function. Extend the previous code and also calculate the standard deviation, `sd()`, per task. Does the task that is faster also have the lower variability in RT (i.e., smaller sd)?
 
 ```{r}
 # fhch %>% ...
@@ -71,7 +70,7 @@ Hints:
 
 Means are quite sensitive to outliers. Therefore, please recalculate `mean` and  `sd` per task, after removing some extreme outliers. Here, we define outliers as RTs below .25 seconds and above 2.5 seconds. Do we still find the same pattern?
 
-Remember, the verb for selecting variables using `dplyr` is filter. You can concatenate various filters simply by comma, in the same call to `filter`.
+Remember, the verb for selecting variables using `dplyr` is `filter`. You can concatenate various filters simply by comma, in the same call to `filter()`.
 
 
 ```{r}
