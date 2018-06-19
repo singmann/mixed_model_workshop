@@ -15,9 +15,10 @@ The `task` was a between subjects factor: 25 participants worked on the lexical 
 
 ### Design
 
-The data comes with package `afex`, so we can load it right away.
+The data comes with package `afex`, so we can load it right away. But at first, we load the `tidyverse` package, because these are the functions we want to use throughout this exercise.
 
 ```{r}
+library("tidyverse")
 data("fhch2010", package = "afex") # load 
 fhch <- droplevels(fhch2010[ fhch2010$correct,]) # remove errors
 str(fhch) # structure of the data
