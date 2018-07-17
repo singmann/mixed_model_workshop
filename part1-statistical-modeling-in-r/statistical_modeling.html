@@ -15,7 +15,7 @@ class: center, middle, inverse, title-slide
 # Statistical Modeling in R
 ## The Basics
 ### Henrik Singmann (University of Zurich)<br/>Twitter: <a href='https://twitter.com/HenrikSingmann'><span class="citation">@HenrikSingmann</span></a>
-### June 2018
+### July 2018
 
 ---
 
@@ -54,9 +54,11 @@ class: inline-grey
     - Categorical covariates and interactions
 
 - Tests of Model Terms/Effects with `car::Anova()`
-- Follow-up Tests with `lsmeans`/`emmeans`
+- Follow-up Tests with `emmeans`
 - ANOVAs with `afex`
 - Problem with Repeated-Measures: IID assumption
+  - Solution: Different ways of *pooling*
+  - Pooling: worked examples 
 
 ---
 
@@ -205,7 +207,7 @@ class: small
 .pull-left2[
 
 ```r
-sat.act$SATQ_c &lt;- sat.act$SATQ - mean(sat.act$SATQ, na.rm = TRUE)
+sat.act$SATQ_c &lt;- sat.act$SATQ - mean(sat.act$SATQ)
 sat.act$SATV_c &lt;- sat.act$SATV - mean(sat.act$SATV)
 m2 &lt;- lm(ACT ~ SATQ_c, sat.act)
 summary(m2)
@@ -905,8 +907,8 @@ class: inline-grey
   - Dummy/treatment contrasts (`R` default) lead to simple effects for lower order effects.
   - **Coding only affects interpretation of parameters/tests not overall model fit.**
 
-- For models with only numerical covariates, suppressing intercept works as expected.
-- For models with categorical covariates, suppressing intercept or other lower-order effects often leads to very surprising results (and should generally be avoided).
+- For models with solely numerical independent variables, suppressing intercept works as expected.
+- For models with categorical independent variables, suppressing intercept or other lower-order effects often leads to very surprising results (and should generally be avoided).
 
 ---
 class: center, middle, inverse
@@ -1013,13 +1015,13 @@ Anova(m6, type = 3)
 ---
 class: small, inline-grey
 
-# `emmeans` for Follow-Up/Post-Hoc Tests
+# `emmeans` for Follow-Up/Post-Hoc Tests I
 
 .pull-left[
 
 ```r
-library("emmeans")      # or: library("emmeans")
-emmeans(m6, ~education) # or: emmeans(m6, ~education)
+library("emmeans")    
+(emms &lt;- emmeans(m6, ~education))
 ```
 
 ```
@@ -1043,7 +1045,7 @@ One can specify arbitrary contrasts on marginal means (e.g., `contrast()`).
 .pull-right[
 
 ```r
-pairs(emmeans(m6,~education),adjust='holm')
+pairs(emms, adjust='holm')
 ```
 
 ```
@@ -1070,6 +1072,59 @@ pairs(emmeans(m6,~education),adjust='holm')
 ]
 
 ---
+class: small, inline-grey
+
+# `emmeans` for Follow-Up/Post-Hoc Tests II
+
+.pull-left[
+
+```r
+library("emmeans")  
+(emms &lt;- emmeans(m6, "education")) 
+```
+
+```
+##  education emmean     SE  df lower.CL upper.CL
+##  0          27.55 0.6357 675    26.30    28.80
+##  1          27.21 0.7299 675    25.77    28.64
+##  2          26.93 0.7268 675    25.50    28.35
+##  3          28.42 0.3182 675    27.79    29.04
+##  4          29.16 0.4201 675    28.33    29.98
+##  5          29.97 0.4285 675    29.13    30.81
+## 
+## Results are averaged over the levels of: gender 
+## Confidence level used: 0.95
+```
+`emmeans` returns estimated marginal means (or least-square means for linear regression) for model terms (e.g., `emmeans(m6, ~education*gender)`).
+
+One can specify arbitrary contrasts on marginal means (e.g., `contrast()`).
+
+]
+
+.pull-right[
+
+```r
+cs &lt;- list(
+  "12-45" = c(0, -0.5, -0.5, 0, 0.5, 0.5),
+  "0-3" = c(-1, 0, 0, 1, 0, 0),
+  "all-last" = c(-rep(0.2, 5), 1)
+)
+contrast(emms, cs, adjust = "holm")
+```
+
+```
+##  contrast estimate     SE  df t.ratio p.value
+##  12-45       2.498 0.5960 675   4.191  0.0001
+##  0-3         0.864 0.7109 675   1.215  0.2246
+##  all-last    2.120 0.5033 675   4.213  0.0001
+## 
+## Results are averaged over the levels of: gender 
+## P value adjustment: holm method for 3 tests
+```
+]
+
+
+---
 class: inline-grey
 # Beyond Linear Models with Normal Residual Distribution
 
@@ -1088,8 +1143,8 @@ Functions supporting repeated-measures usually require more complicated formulas
 - `lme4::lmer()` linear mixed-effects models (modern implementation)
 - `lme4::glmer()` generalized linear mixed-effects models
 - `mcmcGLMM` Bayesian generalized linear mixed-effects models
-- `rstan::stan_lmer()`/`rstan::stan_glmer()` Bayesian (generalized) linear mixed-effects models
-- `brms::brm` general framework for formula-based Bayesian models. Extremely flexible.
+- `rstan::stan_lmer()`/`rstan::stan_glmer()` **Bayesian (generalized) linear mixed-effects models**
+- `brms::brm` **general framework for formula-based Bayesian models. Extremely flexible.**
 
 ---
 class: inline-grey
@@ -1101,9 +1156,10 @@ class: inline-grey
 4. Describe statistical model using `formula`
 4. Fit model: pass `formula` and `data.frame` to corresponding modeling function (e.g., `lm()`, `glm()`)
 4. Check model fit (e.g., inspect residuals)
-5. Test terms (i.e., main effects and interactions): Pass fitted model to `car::Anova()`
+5. Test terms (i.e., main effects and interactions): Pass fitted model to `car::Anova()`  
+    Note: parameter estimates (e.g., `coef` or `summary`) are often not informative for models involving categorical variables, especially if the variables have more than three levels.
 7. Follow-up tests: 
-   - Estimated marginal means: Pass fitted model to `lsmeans::lsmeans()`/`emmeans::emmeans()`
+   - Estimated marginal means: Pass fitted model to `emmeans::emmeans()` (formerly `lsmeans`)
    - Specify specific contrasts on estimated marginal means (e.g., `contrast()`, `pairs()`)
 
 --
@@ -1197,9 +1253,9 @@ class: inline-grey
 - For repeated-measures independence assumption often violated (e.g., data points from one participant more likely to be similar to each other).
 - Violation of independence assumption can have dramatic consequences on statistical inferences from a model (e.g., increased or decreased Type I errors).
 
-- Three approaches for dealing with repeated-measures:
+- Three approaches for dealing with repeated-measures (e.g., Gelman &amp; Hill, 2007):
   1. *Complete pooling*: Ignore dependency in data (often not appropriate, results likely biased, not trustworthy)
-  2. *No pooling*: Separate data based on factor producing dependency and calculate separate statistical model for each subset (combining results can be non-trivial)
+  2. *No pooling*: Separate data based on factor producing dependency and calculate separate statistical model for each subset (individual-level parameters prone to overfitting, combining results can be non-trivial)
   3. *Partial pooling*: Analyse data jointly while taking dependency into account (gold standard, e.g., mixed models, hierarchical models)
 
 ---
@@ -1216,7 +1272,7 @@ class: small
 ### No Pooling
 - 1 set of parameters `\(\Theta_i\)` for each individual data set `\({\bf n_i}\)`
 - Likelihood: `\(\sum_{i = 1}^N ln(L({\bf n_i} \mid \Theta_i))\)`
-- Requires considerable data on the individual level
+- Requires considerable data on the individual level, otherwise parameter prone to overfitting
 - Results sometimes not easy to combine
 
 --
@@ -1226,7 +1282,7 @@ class: small
 - Likelihood: `\(\sum_{i = 1}^N ln(L({\bf n_i} \mid \Theta_i, {\hat \Theta})) + ln(L(\Theta_i \mid {\hat \Theta}))\)`
 - Requires distributional assumption for group-level parameters (e.g., individual-level data normally distributed around group-level parameters)
 - Provides on average better estimates for both individual-level and group-level parameters (e.g., [Stein's paradox](https://en.wikipedia.org/wiki/Stein%27s_example))
-- Estimation can be difficult in a frequentist setting (therefore alternatively penalized or restricted maximum likelihood estimation)
+- Estimation can be difficult in a frequentist setting (alternatives: penalized or restricted maximum likelihood estimation or Bayesian estimation)
 
 ---
 class: small
@@ -1283,7 +1339,7 @@ ggplot(Machines, aes(x = Machine, y = score)) +
   theme_light()
 ```
 
-![](statistical_modeling_files/figure-html/unnamed-chunk-58-1.svg)&lt;!-- --&gt;
+![](statistical_modeling_files/figure-html/unnamed-chunk-60-1.svg)&lt;!-- --&gt;
 
 ---
 
@@ -1385,7 +1441,7 @@ car::Anova(m1, type = 3)
 ---
 class: small
 
-## Partial-Pooling: Repeated-measures ANOVA
+## Simple Partial-Pooling: Repeated-measures ANOVA
 
 
 ```r
@@ -1454,53 +1510,254 @@ class: small
 
 
 ---
-class: small
+class: small, inline-grey
 
-# Skovgaard-Olsen et al. (2016)
+### Skovgaard-Olsen et al. (2016)
 
 - Conditional = *if-then* statement; e.g., If global warning continues, London will be flooded.
 - Bayesian reasoning often assumes 'the Equation': *P*(if *A* then *B*) = *P*(*B*|*A*)
-- Our question: Does the Equation hold? 
+- Our question: Does 'the Equation' hold? 
+- Participants provide idiosyncratic estimates of both *P*(if *A* then *B*) and *P*(*B*|*A*).
 
-- 348 participants recruited via `crowdflower.com` worked on 12 items:
-  &gt; Sophia's scenario: Sophia wishes to find a nice present for her 13-year-old son, Tim, for Christmas. She is running on a tight budget, but she knows that Tim loves participating in live role-playing in the forest and she is really skilled at sewing the orc costumes he needs. Unfortunately, she will not be able to afford the leather parts that such costumes usually have, but she will still be able to make them look nice.
+- ~100 participants recruited via `crowdflower.com` worked on 12 items:
+
+&gt; Sophia's scenario: Sophia wishes to find a nice present for her 13-year-old son, Tim, for Christmas. She is running on a tight budget, but she knows that Tim loves participating in live role-playing in the forest and she is really skilled at sewing the orc costumes he needs. Unfortunately, she will not be able to afford the leather parts that such costumes usually have, but she will still be able to make them look nice.
 
 --
 
+(1) *P*(*B*|*A*) (`B_given_A`):
   &gt; Suppose Sophia makes Tim an orc costume.
   &gt; Under this assumption, how probable is it that the following sentence is true:   
   &gt; Tim will be excited about his present.
 
 --
 
+(2) *P*(if *A* then *B*) (`if_A_then_B`):
   &gt; Could you please rate the probability that the following sentence is true:   
   &gt; IF Sophia makes Tim an orc costume, THEN he will be excited about his present.
 
+---
+
+class: small 
+
+.pull-left[
+### Skovgaard-Olsen et al. (2016)
+
+- Does 'the Equation' (i.e., *P*(if *A* then *B*) = *P*(*B*|*A*)) hold? 
+
+- Participants provided idiosyncratic estimates of *P*(if *A* then *B*) (`if_A_then_B`) and *P*(*B*|*A*) (`B_given_A`) for each item.
+- Each participant worked on 12 items.
+
+
+
+```r
+# Session -&gt; Set Working Directory -&gt;
+# -&gt; To Source File Location
+load("ssk16_dat_tutorial.rda") 
+# full data: https://osf.io/j4swp/
+str(dat, width=50, strict.width = "cut")
+```
+
+```
+## 'data.frame':	1128 obs. of  7 variables:
+##  $ p_id         : Factor w/ 94 levels "102_P(if"..
+##  $ i_id         : Factor w/ 12 levels "1","2",""..
+##  $ B_given_A    : num  52 60 6 0 8 8 79 0 51 79 ..
+##  $ B_given_A_c  : num  0.02 0.1 -0.44 -0.5 -0.42..
+##  $ if_A_then_B  : num  52 1 5 0 7 0 84 0 51 94 ...
+##  $ if_A_then_B_c: num  0.02 -0.49 -0.45 -0.5 -0...
+##  $ rel_cond     : Factor w/ 3 levels "PO","NE","..
+```
+
+]
+
+.pull-right[
+
+
+```r
+ggplot(data = dat) + 
+  geom_point(mapping = aes(x = B_given_A, 
+                           y = if_A_then_B), 
+             alpha = 0.2, pch = 16, size = 3) + 
+  coord_fixed() +
+  theme_light() +
+  theme(text = element_text(size=20))
+```
+
+![](statistical_modeling_files/figure-html/unnamed-chunk-71-1.svg)&lt;!-- --&gt;
+
+]
 
 ---
 class: small
 
-# Skovgaard-Olsen et al. (2016)
+.pull-left[
 
-- Does the Equation (i.e., *P*(if *A* then *B*) = *P*(*B*|*A*)) hold? 
+### Skovgaard-Olsen et al. (2016): Complete Pooling
 
-- For each item, participants provide idiosyncratic estimates of *P*(if *A* then *B*) and *P*(*B*|*A*).
-- Each participant worked on 12 items, 4 per relevance condition (i.e., a 4 x 3 within-subjects design)
+(1) Overall
 
-- Data in the `exercises` folder (also available at: https://osf.io/j4swp/)
+
+```r
+m1 &lt;- lm(if_A_then_B~B_given_A, dat)
+broom::tidy(m1)
+```
+
+```
+## # A tibble: 2 x 5
+##   term        estimate std.error statistic   p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)    5.59     1.34        4.17 3.24e-  5
+## 2 B_given_A      0.707    0.0217     32.6  1.90e-164
+```
+
+
+]
 
 --
 
-# Exercise 1: Analyse the data using the no-pooling approach.
-- Calculate the regression between *P*(if *A* then *B*) and *P*(*B*|*A*) separately for each participant.
-- Does this analysis suggest that there is an overall association between the two variables? If so, how strong is this relationship?
-- For precise instructions see: `exercises/exercise_1.Rmd`
+.pull-right[
+
+(2) By-Participant
+
+
+```r
+dat_p &lt;- dat %&gt;% 
+  group_by(p_id) %&gt;% 
+  summarise_if(is.numeric, mean)
+  
+m2 &lt;- lm(if_A_then_B~B_given_A, dat_p)
+broom::tidy(m2)
+```
+
+```
+## # A tibble: 2 x 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   -0.956    4.97      -0.192 8.48e- 1
+## 2 B_given_A      0.842    0.0996     8.46  4.04e-13
+```
+
+
+(3) By-Item
+
+
+```r
+dat_i &lt;- dat %&gt;% 
+  group_by(i_id) %&gt;% 
+  summarise_if(is.numeric, mean)
+  
+m3 &lt;- lm(if_A_then_B~B_given_A, dat_i)
+broom::tidy(m3)
+```
+
+```
+## # A tibble: 2 x 5
+##   term        estimate std.error statistic p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 (Intercept)   13.9       9.18       1.52  0.160 
+## 2 B_given_A      0.536     0.187      2.86  0.0170
+```
+
+]
+
+---
+
+### Skovgaard-Olsen et al. (2016): No Pooling (By-Participant) I
+
+
+
+```r
+no_pooling_estimates &lt;- dat %&gt;% 
+  group_by(p_id) %&gt;% 
+  do(broom::tidy(lm(if_A_then_B ~ B_given_A, .)))
+## see: https://stackoverflow.com/a/30015869/289572
+
+no_pooling_estimates
+```
+
+```
+## # A tibble: 188 x 6
+## # Groups:   p_id [94]
+##    p_id           term        estimate std.error statistic p.value
+##    &lt;fct&gt;          &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+##  1 102_P(if,then) (Intercept)    2.31      7.95     0.290  0.777  
+##  2 102_P(if,then) B_given_A      0.547     0.161    3.41   0.00669
+##  3 107_P(if,then) (Intercept)   -4.69     12.6     -0.372  0.718  
+##  4 107_P(if,then) B_given_A      0.640     0.246    2.60   0.0265 
+##  5 108_P(if,then) (Intercept)    9.72     19.8      0.491  0.634  
+##  6 108_P(if,then) B_given_A      0.487     0.355    1.37   0.200  
+##  7 110_P(if,then) (Intercept)    0.254    10.5      0.0242 0.981  
+##  8 110_P(if,then) B_given_A      0.846     0.210    4.03   0.00241
+##  9 111_P(if,then) (Intercept)    9.93     16.1      0.615  0.552  
+## 10 111_P(if,then) B_given_A      0.401     0.248    1.61   0.138  
+## # ... with 178 more rows
+```
+
+---
+class: small
+
+### Skovgaard-Olsen et al. (2016): No Pooling (By-Participant) II
+
+.pull-left[
+
+```r
+slopes &lt;- no_pooling_estimates %&gt;% 
+  filter(term == "B_given_A")
+
+ggplot(slopes, aes(estimate)) +
+  geom_histogram(bins = 35) +
+  theme_light() +
+  theme(text = element_text(size=20))
+```
+
+![](statistical_modeling_files/figure-html/unnamed-chunk-76-1.svg)&lt;!-- --&gt;
+
+]
+--
+
+.pull-right[
+
+```r
+m_no &lt;- lm(estimate ~ 1, slopes)
+car::Anova(m_no, type = 3)
+```
+
+```
+## Anova Table (Type III tests)
+## 
+## Response: estimate
+##             Sum Sq Df F value Pr(&gt;F)    
+## (Intercept)   45.4  1     720 &lt;2e-16 ***
+## Residuals      5.9 93                   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+broom::tidy(m_no)
+```
+
+```
+## # A tibble: 1 x 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)    0.695    0.0259      26.8 1.48e-45
+```
+
+]
+
+---
+class: center, middle, inverse
+
+# Partial-Pooling for Skovgaard-Olsen et al. (2016) Data Requires Mixed-Models
+
 
 ---
 ### References Statistical Modeling:
 - John Fox and Sanford Weisberg (2011). *An R Companion to Applied Regression, Second Edition.* Thousand Oaks CA: Sage. URL: http://socserv.socsci.mcmaster.ca/jfox/Books/Companion
-- Russell V. Lenth (2016). Least-Squares Means: The R Package lsmeans. *Journal of Statistical
-  Software*, 69(1), 1-33. https://doi.org/10.18637/jss.v069.i01
+- Gelman, A., &amp; Hill, J. (2007). *Data analysis using regression and multilevel/hierarchical models.* Cambridge; New York: Cambridge University Press.
+- Russell V. Lenth (2016). Least-Squares Means: The R Package lsmeans. *Journal of Statistical Software*, 69(1), 1-33. https://doi.org/10.18637/jss.v069.i01
 - Cohen, J., Cohen, P., West, S. G., &amp; Aiken, L. S. (2002). *Applied Multiple Regression/Correlation Analysis for the Behavioral Sciences.* New York: Routledge Academic.
 
 ### References Example Data:
@@ -1524,12 +1781,23 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   d.head.appendChild(s);
 })();</script>
 
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  tex2jax: {
-    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
   }
-});
+})();
 </script>
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
