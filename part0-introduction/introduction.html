@@ -214,9 +214,11 @@ Try replacing `summary(cars)` with `knitr::kable(summary(cars))`
 ---
 class: small, inline-grey
 
-- visit: [`https://github.com/singmann/mixed_model_workshop`](https://github.com/singmann/mixed_model_workshop)
+- visit: [`https://github.com/singmann/mixed_model_workshop/releases`](https://github.com/singmann/mixed_model_workshop/releases)
+- Download `Source code (zip)` (or `Source code (tar.gz) `)
 
-![](figures/github-workshop.png)
+&lt;img src="figures/github-workshop.png" style="width: 80%" align="center" /&gt;
+
 
 
 ---
@@ -549,14 +551,27 @@ ggplot(iris2, aes(x = Species, y = Petal.Length)) +
 - Great for communicating results and ensuring reproducibility.
 
 ---
+class: inline-grey
 
 ### Exercise
 
-- Open `exercises/exercise_0.Rmd`
-- Follow text and try to solve a few small tasks helping you to get comfortable with the `tidyverse`.
-- Main goal is getting comfortable with `dplyr` and `ggplot2` syntax.
+- Open `exercises/exercise_0.Rmd` (or the exercise handout or  `exercises/exercise_0.nb.html` for a nicer format of the instruction).
+- Follow text and try to solve a few small tasks helping you to get comfortable with the `tidyverse` (without looking at the solution).
+- Main goal is for you getting comfortable with `dplyr` and `ggplot2` syntax.
 - Exercise uses response time data from Freeman, Heathcote, Chalmers, and Hockley (2010).
 - Participants did a lexical-decision task or a naming task.
+
+The exercise uses yet another type of `RMarkdown` document, `html_notebook` instead of `html_document`:
+- `html_document`: "knitting" runs all code in a new `R` process from beginning to end (which ensures reproducibility).
+- In contrast, a `html_notebook`
+  - uses current `R` process (i.e., state of `Console`), similar to [`Jupyter`](http://jupyter.org/) (does *NOT* ensure reproducibility),
+  - allows to `Preview` the current state of the document as a `html` file,
+  - potentially better for initial analysis or situations involving expensive calculations,
+  - can be transformed into `html_document` by simply changing the YAML header.
+
+Remember:
+- Run a code chunk (i.e., grey block) with `Ctrl`/`Cmd` + `Shift` + `Enter`
+- Run a single line of code with `Ctrl`/`Cmd` + `Enter`
 
 ---
 
