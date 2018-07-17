@@ -1059,6 +1059,20 @@ class: center, middle, inverse
 
 # Partial-Pooling for Skovgaard-Olsen et al. (2016) Data Requires Mixed-Models
 
+---
+
+## Summary: Repeated-Measures and Pooling
+
+- IID assumption (i.e., independent and identically distributed) shared by most "standard" statistical model. 
+- In case of repeated-measures, independence assumption often violated (e.g., data points from one participant more likely to be similar to each other).
+- Violation of independence assumption can have dramatic consequences on statistical inferences from a model (e.g., increased or decreased Type I errors).
+
+
+- Three approaches for dealing with repeated-measures (e.g., Gelman & Hill, 2007):
+  1. *Complete pooling*: Ignore dependency in data (often not appropriate, results likely biased, not trustworthy)
+  2. *No pooling*: Separate data based on factor producing dependency and calculate separate statistical model for each subset (individual-level parameters prone to overfitting, combining results can be non-trivial)
+  3. *Partial pooling*: Analyse data jointly while taking dependency into account (gold standard, e.g., mixed models, hierarchical models)
+
 
 ---
 ### References Statistical Modeling:
