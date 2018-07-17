@@ -203,14 +203,14 @@ Important chunk options:
 - `warning`: display code warnings in document (default = `TRUE`)
 - `results`: How to format results:
   - default = `'markup'`
-  - `'asis'` - passthrough results
+  - `'asis'` - pass through results
   - `'hide'` - do not display results
   - `'hold'` - put all results below all code
 - `cache`: cache results for future knits (default = `FALSE`)
 
 --
 
-Try replacing `summary(cars)` with `knitr::kable(summary(cars))`
+Try replacing `summary(cars)` with `str(cars)`
 
 ---
 class: small, inline-grey
