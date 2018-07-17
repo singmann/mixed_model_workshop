@@ -2,7 +2,7 @@
 title: "Mixed Models in R"
 subtitle: "An Applied Introduction"
 author: "Henrik Singmann (University of Zurich)<br/>Twitter: <a href='https://twitter.com/HenrikSingmann'>@HenrikSingmann</a>"
-date: "June 2018"
+date: "July 2018"
 output:
   xaringan::moon_reader:
     css: ["default", "default-fonts", "my-theme.css"]
@@ -56,13 +56,13 @@ class: small
 --
 
 
-- Substantive questions cannot be directly adressed via empirical means (e.g., [Duhem-Quine thesis](https://en.wikipedia.org/wiki/Duhem%E2%80%93Quine_thesis))
+- Substantive questions cannot be directly adressed via empirical means (e.g., [Duhem-Quine thesis](https://en.wikipedia.org/wiki/Duhem%E2%80%93Quine_thesis)).
 - Researchers use empirical observations (data) for making arguments about research questions.
 - Appropriate *research methods* (e.g., experimental design, reliability, validity, reproducibility) help in making better (i.e., more convincing) arguments. 
-- *Data visualization* and *Statistics* are important aspect that can help in making such arguments:
-    - Statistics alone cannot prove nor disprove a substantive research question or an empirical hypothesis: *Statistical arguments need context (e.g., data visualization).*
+- *Data visualization* and *statistics* are important tools for making good arguments about data:
+    - A statistic cannot prove nor disprove a substantive research question or empirical hypothesis: *statistical arguments need context (e.g., data visualization).* [this is why AIC/BIC/WAIC/... often sucks]
     - Some statistical arguments are better, some are worse, and some have essentially no evidential value.
-    - Statistics is like a toolkit, researchers have to select right tool for each job.
+    - *Statistics is not a ritual* (e.g., [Gigerenzer, 2018](https://doi.org/10.1177/2515245918771329)). Instead, statistics is a toolkit, researchers have to select the right tool for each job.
 --
 - "There are no routine statistical questions, only questionable statistical routines." (David Cox)
 - "The combination of some data and an aching desire for an answer does not ensure that a reasonable answer can be extracted from a given body of data." (John Tukey)
@@ -72,9 +72,12 @@ class: small
 
 ### Process and Tools: `tidyverse` and `RMarkdown`
 
-
 ![](figures/data-science.png) 
 
+Conceptual model of data analysis (source: [Wickham & Grolemund (2017): R for Data Science](http://r4ds.had.co.nz))
+
+
+--
 
 - `tidyverse`: Selection of packages curated/developed by `RStudio`:
     - [`readr`](https://readr.tidyverse.org/): Reading data in, the `RStudio` way.
@@ -99,17 +102,17 @@ class: small
     - `pdf` or `Word` file
     - presentation (like this one)
     - blog or other website (`blogdown`), books (`bookdown`), interactive tutorials (`learnr`), [...](https://www.rstudio.com/resources/videos/r-markdown-eight-ways/)
-- `RMarkdown` is efficient, easy to use, ensures reproducibility, and is ideal for communicating results with collaborators or even for writing papers (i.e., [`papaja`](https://github.com/crsh/papaja)).
 
 --
 
-- Warning: If you send an `RMarkdown` `html` report, it needs to be downloaded before figures are visible (e.g., opening it directly from `gmail` does not show plots)!
+- `RMarkdown` is efficient, easy to use, ensures reproducibility, and
+  - is ideal for communicating results with collaborators or PIs,
+  - can be used for for writing preregistrations with [`prereg`](https://cran.r-project.org/package=prereg), 
+  - and even for writing papers (i.e., [`papaja`](https://github.com/crsh/papaja)).
 
----
+--
 
-### `RMarkdown` Document Example ([source](http://rstudio-pubs-static.s3.amazonaws.com/202429_acbbe794b27f4dffaac6047d1b6d5aa0.html))
-
-![](figures/RMarkdown-example.png)
+- *Warning:* If you send an `RMarkdown` `html` report, it needs to be downloaded before figures are visible (e.g., opening it directly from `gmail` does not show plots)!
 
 ---
 class:inline-grey, small
@@ -120,7 +123,18 @@ class:inline-grey, small
 - Enter title and your name -> Keep `html` selected -> `Ok`
 - `Save` file somewhere (e.g., `test.Rmd` in `Downloads`) -> `Knit` creates and opens `html` document
 
---
+
+---
+
+### `RMarkdown` Document Example ([source](http://rstudio-pubs-static.s3.amazonaws.com/202429_acbbe794b27f4dffaac6047d1b6d5aa0.html))
+
+![](figures/RMarkdown-example.png)
+
+---
+class:inline-grey, small
+
+### `RMarkdown` - YAML Header
+
 
 ```{r, eval = FALSE}
 ---
@@ -219,9 +233,11 @@ class: inline-grey
 - `part2-mixed-models-in-r` materials for mixed models session.
 - In each folder:
   - `.Rmd` file is the `RMarkdown` containing text and code for the slides.
-  - You can follow the presentation by following this file. Don't forget: run a code chunk with `Ctrl`/`Cmd` + `Shift` + `Enter`
+  - `.R` file only contains the code for the slides and no text.
+  - You can follow the presentation by following either file. Don't forget:
+      - Run a code chunk (i.e., grey block) with `Ctrl`/`Cmd` + `Shift` + `Enter`
+      - Run a single line of code with `Ctrl`/`Cmd` + `Enter`
   - `.html` is the full presentation you are seeing. After opening, press `h` for help.
-  - If available, `.R` file contains only the code, without additional slide text.
 - `exercises` contains some exercises.
 - `handout` contains the handout (also includes the `RMarkdown` file)
 
@@ -320,7 +336,7 @@ iris2$Sepal.Length %>%
 ---
 class: small
 
-### Tidy data (`tidyr`)
+### Tidy Data (`tidyr`)
 
 *"Tidy datasets are all alike, but every messy dataset is messy in its own way." -- Hadley Wickham*
 
@@ -333,7 +349,7 @@ class: small
 --
 
 - For psychologists: Transform wide into long data. See also: 
-- Wickham, H. (2014). [Tidy data. *The Journal of Statistical Software*, 59(10). http://www.jstatsoft.org/v59/i10
+- Wickham, H. (2014). Tidy data. *The Journal of Statistical Software*, 59(10). http://www.jstatsoft.org/v59/i10
 - Wickham, H., & Grolemund, G. (2017). R for Data Science (ch. 12). http://r4ds.had.co.nz/tidy-data.html
 
 ---
@@ -423,7 +439,7 @@ ggplot(iris2, aes(x = Species, y = Petal.Length)) +
 
 ### `tidyverse`
 - Selection of packages providing a unified approach and syntax to common data analysis problems. 
-- To learn more about the `tidyverse` check out the free "R for Data Science" book by Wickham & Grolemund
+- To learn more about the `tidyverse` check out the free "R for Data Science" book by Wickham & Grolemund: http://r4ds.had.co.nz/
 
 ### `RMarkdown`
 - Allows combining prose, code, and output into one nicely formatted document. 
