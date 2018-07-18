@@ -3,7 +3,7 @@ Please bring your laptop and prepare it beforehand. This includes:
 - installing a few R packages, 
 - and making sure that xaringan presentations can be produced. 
 
-In the interest of spending the time of the tutorial on its content, it is very important that you do this at least one or two days before the workshop. I will not have the time to solve installation problems at the day of the workshop. So please make sure you do this beforehand!
+In the interest of spending the time of the tutorial on its content, it is important that you do this at least one or two days before the tutorial. I will not have the time to solve installation problems at the day of the tutorial. So please make sure you do this beforehand!
 
 The latest version of R is 3.5.1 and can be downloaded from: https://cran.rstudio.com/
 The latest version of RStudio is 1.1.453 and can be downloaded from: https://www.rstudio.com/products/rstudio/download/#download
