@@ -1,6 +1,8 @@
 ---
 title: "Exercise 0: Introduction"
-output: html_notebook
+author: "Henrik Singmann"
+date: "25 July 2018"
+output: pdf_document
 ---
 
 ## Freeman, Heathcote, Chalmers, and Hockley (2010) data
@@ -78,6 +80,7 @@ Remember, the verb for selecting variables using `dplyr` is `filter`. You can co
 # fhch %>% ...
 
 ```
+
 
 
 ## Exercise 2: Aggregating Data by ID and Plotting

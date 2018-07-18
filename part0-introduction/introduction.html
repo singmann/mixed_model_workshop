@@ -15,7 +15,7 @@ class: center, middle, inverse, title-slide
 # Mixed Models in R
 ## An Applied Introduction
 ### Henrik Singmann (University of Zurich)<br/>Twitter: <a href='https://twitter.com/HenrikSingmann'><span class="citation">@HenrikSingmann</span></a>
-### June 2018
+### July 2018
 
 ---
 
@@ -53,13 +53,13 @@ class: small
 --
 
 
-- Substantive questions cannot be directly adressed via empirical means (e.g., [Duhem-Quine thesis](https://en.wikipedia.org/wiki/Duhem%E2%80%93Quine_thesis))
+- Substantive questions cannot be directly adressed via empirical means (e.g., [Duhem-Quine thesis](https://en.wikipedia.org/wiki/Duhem%E2%80%93Quine_thesis)).
 - Researchers use empirical observations (data) for making arguments about research questions.
 - Appropriate *research methods* (e.g., experimental design, reliability, validity, reproducibility) help in making better (i.e., more convincing) arguments. 
-- *Data visualization* and *Statistics* are important aspect that can help in making such arguments:
-    - Statistics alone cannot prove nor disprove a substantive research question or an empirical hypothesis: *Statistical arguments need context (e.g., data visualization).*
+- *Data visualization* and *statistics* are important tools for making good arguments about data:
+    - A statistic cannot prove nor disprove a substantive research question or empirical hypothesis: *statistical arguments need context (e.g., data visualization).* [this is why AIC/BIC/WAIC/... often sucks]
     - Some statistical arguments are better, some are worse, and some have essentially no evidential value.
-    - Statistics is like a toolkit, researchers have to select right tool for each job.
+    - *Statistics is not a ritual* (e.g., [Gigerenzer, 2018](https://doi.org/10.1177/2515245918771329)). Instead, statistics is a toolkit, researchers have to select the right tool for each job.
 --
 - "There are no routine statistical questions, only questionable statistical routines." (David Cox)
 - "The combination of some data and an aching desire for an answer does not ensure that a reasonable answer can be extracted from a given body of data." (John Tukey)
@@ -69,9 +69,12 @@ class: small
 
 ### Process and Tools: `tidyverse` and `RMarkdown`
 
-
 ![](figures/data-science.png) 
 
+Conceptual model of data analysis (source: [Wickham &amp; Grolemund (2017): R for Data Science](http://r4ds.had.co.nz))
+
+
+--
 
 - `tidyverse`: Selection of packages curated/developed by `RStudio`:
     - [`readr`](https://readr.tidyverse.org/): Reading data in, the `RStudio` way.
@@ -96,17 +99,17 @@ class: small
     - `pdf` or `Word` file
     - presentation (like this one)
     - blog or other website (`blogdown`), books (`bookdown`), interactive tutorials (`learnr`), [...](https://www.rstudio.com/resources/videos/r-markdown-eight-ways/)
-- `RMarkdown` is efficient, easy to use, ensures reproducibility, and is ideal for communicating results with collaborators or even for writing papers (i.e., [`papaja`](https://github.com/crsh/papaja)).
 
 --
 
-- Warning: If you send an `RMarkdown` `html` report, it needs to be downloaded before figures are visible (e.g., opening it directly from `gmail` does not show plots)!
+- `RMarkdown` is efficient, easy to use, ensures reproducibility, and
+  - is ideal for communicating results with collaborators or PIs,
+  - can be used for for writing preregistrations with [`prereg`](https://cran.r-project.org/package=prereg), 
+  - and even for writing papers (i.e., [`papaja`](https://github.com/crsh/papaja)).
 
----
+--
 
-### `RMarkdown` Document Example ([source](http://rstudio-pubs-static.s3.amazonaws.com/202429_acbbe794b27f4dffaac6047d1b6d5aa0.html))
-
-![](figures/RMarkdown-example.png)
+- *Warning:* If you send an `RMarkdown` `html` report, it needs to be downloaded before figures are visible (e.g., opening it directly from `gmail` does not show plots)!
 
 ---
 class:inline-grey, small
@@ -117,7 +120,18 @@ class:inline-grey, small
 - Enter title and your name -&gt; Keep `html` selected -&gt; `Ok`
 - `Save` file somewhere (e.g., `test.Rmd` in `Downloads`) -&gt; `Knit` creates and opens `html` document
 
---
+
+---
+
+### `RMarkdown` Document Example ([source](http://rstudio-pubs-static.s3.amazonaws.com/202429_acbbe794b27f4dffaac6047d1b6d5aa0.html))
+
+![](figures/RMarkdown-example.png)
+
+---
+class:inline-grey, small
+
+### `RMarkdown` - YAML Header
+
 
 
 ```r
@@ -188,21 +202,23 @@ Important chunk options:
 - `warning`: display code warnings in document (default = `TRUE`)
 - `results`: How to format results:
   - default = `'markup'`
-  - `'asis'` - passthrough results
+  - `'asis'` - pass through results
   - `'hide'` - do not display results
   - `'hold'` - put all results below all code
 - `cache`: cache results for future knits (default = `FALSE`)
 
 --
 
-Try replacing `summary(cars)` with `knitr::kable(summary(cars))`
+Try replacing `summary(cars)` with `str(cars)`
 
 ---
 class: small, inline-grey
 
-- visit: [`https://github.com/singmann/mixed_model_workshop`](https://github.com/singmann/mixed_model_workshop)
+- visit: [`https://github.com/singmann/mixed_model_workshop/releases`](https://github.com/singmann/mixed_model_workshop/releases)
+- Download `Source code (zip)` (or `Source code (tar.gz) `)
 
-![](figures/github-workshop.png)
+&lt;img src="figures/github-workshop.png" style="width: 80%" align="center" /&gt;
+
 
 
 ---
@@ -218,9 +234,11 @@ class: inline-grey
 - `part2-mixed-models-in-r` materials for mixed models session.
 - In each folder:
   - `.Rmd` file is the `RMarkdown` containing text and code for the slides.
-  - You can follow the presentation by following this file. Don't forget: run a code chunk with `Ctrl`/`Cmd` + `Shift` + `Enter`
+  - `.R` file only contains the code for the slides and no text.
+  - You can follow the presentation by following either file. Don't forget:
+      - Run a code chunk (i.e., grey block) with `Ctrl`/`Cmd` + `Shift` + `Enter`
+      - Run a single line of code with `Ctrl`/`Cmd` + `Enter`
   - `.html` is the full presentation you are seeing. After opening, press `h` for help.
-  - If available, `.R` file contains only the code, without additional slide text.
 - `exercises` contains some exercises.
 - `handout` contains the handout (also includes the `RMarkdown` file)
 
@@ -401,7 +419,7 @@ iris2$Sepal.Length %&gt;%
 ---
 class: small
 
-### Tidy data (`tidyr`)
+### Tidy Data (`tidyr`)
 
 *"Tidy datasets are all alike, but every messy dataset is messy in its own way." -- Hadley Wickham*
 
@@ -414,7 +432,7 @@ class: small
 --
 
 - For psychologists: Transform wide into long data. See also: 
-- Wickham, H. (2014). [Tidy data. *The Journal of Statistical Software*, 59(10). http://www.jstatsoft.org/v59/i10
+- Wickham, H. (2014). Tidy data. *The Journal of Statistical Software*, 59(10). http://www.jstatsoft.org/v59/i10
 - Wickham, H., &amp; Grolemund, G. (2017). R for Data Science (ch. 12). http://r4ds.had.co.nz/tidy-data.html
 
 ---
@@ -526,21 +544,34 @@ ggplot(iris2, aes(x = Species, y = Petal.Length)) +
 
 ### `tidyverse`
 - Selection of packages providing a unified approach and syntax to common data analysis problems. 
-- To learn more about the `tidyverse` check out the free "R for Data Science" book by Wickham &amp; Grolemund
+- To learn more about the `tidyverse` check out the free "R for Data Science" book by Wickham &amp; Grolemund: http://r4ds.had.co.nz/
 
 ### `RMarkdown`
 - Allows combining prose, code, and output into one nicely formatted document. 
 - Great for communicating results and ensuring reproducibility.
 
 ---
+class: inline-grey
 
 ### Exercise
 
-- Open `exercises/exercise_0.Rmd`
-- Follow text and try to solve a few small tasks helping you to get comfortable with the `tidyverse`.
-- Main goal is getting comfortable with `dplyr` and `ggplot2` syntax.
+- Open `exercises/exercise_0.Rmd` (or the exercise handout or  `exercises/exercise_0.nb.html` for a nicer format of the instruction).
+- Follow text and try to solve a few small tasks helping you to get comfortable with the `tidyverse` (without looking at the solution).
+- Main goal is for you getting comfortable with `dplyr` and `ggplot2` syntax.
 - Exercise uses response time data from Freeman, Heathcote, Chalmers, and Hockley (2010).
 - Participants did a lexical-decision task or a naming task.
+
+The exercise uses yet another type of `RMarkdown` document, `html_notebook` instead of `html_document`:
+- `html_document`: "knitting" runs all code in a new `R` process from beginning to end (which ensures reproducibility).
+- In contrast, a `html_notebook`
+  - uses current `R` process (i.e., state of `Console`), similar to [`Jupyter`](http://jupyter.org/) (does *NOT* ensure reproducibility),
+  - allows to `Preview` the current state of the document as a `html` file,
+  - potentially better for initial analysis or situations involving expensive calculations,
+  - can be transformed into `html_document` by simply changing the YAML header.
+
+Remember:
+- Run a code chunk (i.e., grey block) with `Ctrl`/`Cmd` + `Shift` + `Enter`
+- Run a single line of code with `Ctrl`/`Cmd` + `Enter`
 
 ---
 
@@ -574,12 +605,23 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   d.head.appendChild(s);
 })();</script>
 
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  tex2jax: {
-    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
   }
-});
+})();
 </script>
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

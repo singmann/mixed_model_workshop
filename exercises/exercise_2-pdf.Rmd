@@ -1,6 +1,8 @@
 ---
 title: "Exercise 2: Identifying Random Effects-Structure"
-output: html_notebook
+author: "Henrik Singmann"
+date: "25 July 2018"
+output: pdf_document
 ---
 
 # Exercise 2: Identifying Random Effects-Structure
@@ -29,5 +31,3 @@ mixed(log_rt ~ ...)
 ## References 
 - Barr, D. J., Levy, R., Scheepers, C., & Tily, H. J. (2013). Random effects structure for confirmatory hypothesis testing: Keep it maximal. *Journal of Memory and Language*, 68(3), 255-278. https://doi.org/10.1016/j.jml.2012.11.001
 -Freeman, E., Heathcote, A., Chalmers, K., & Hockley, W. (2010). Item effects in recognition memory for words. *Journal of Memory and Language*, 62(1), 1-18. http://doi.org/10.1016/j.jml.2009.09.004
-
-
