@@ -1,6 +1,11 @@
-It is important that everybody brings their laptop and prepares the laptops beforehand. This includes updating both R and RStudio, installing a few R packages, and making sure that xaringan presentations can be produced. In the interest of having the time to talk about the content of the workshop, it is very important that everybody does this on their own at least one or two days before the workshop. I will not have the time to solve installation problems at the day of the workshop. So please make sure you do this beforehand!
+Please bring your laptop and prepare it beforehand. This includes:
+- Updating both R and RStudio, 
+- installing a few R packages, 
+- and making sure that xaringan presentations can be produced. 
 
-The latest version of R is 3.5.0 and can be downloaded from: https://cran.rstudio.com/
+In the interest of spending the time of the tutorial on its content, it is very important that you do this at least one or two days before the workshop. I will not have the time to solve installation problems at the day of the workshop. So please make sure you do this beforehand!
+
+The latest version of R is 3.5.1 and can be downloaded from: https://cran.rstudio.com/
 The latest version of RStudio is 1.1.453 and can be downloaded from: https://www.rstudio.com/products/rstudio/download/#download
 
 Please note that both R and RStudio need to be updated independently and older versions of R/RStudio are likely to not work properly.
@@ -10,16 +15,17 @@ afex
 MEMSS
 psych
 tidyverse
+broom
 xaringan
 sjPlot
-MuMIn
 
 After installation of these packages, please ensure that you can produce ("knit") xaringan presentations. For this, start RStudio and create a new example presentation:
 - In RStudio select from the menu File -> New File -> R Markdown -> From Template -> Ninja Presentation 
 - Save the newly created RMarkdown document somewhere (e.g., as "test.Rmd" on your Desktop)
-- Click on "Knit" (above the code, below the menu). Note that clicking "knit" for the first time might prompt the installation of additional packages. 
+- Click on "Knit" (above the code, below the menu). Note that clicking "Knit" for the first time might prompt the installation of additional packages. 
 
-If successful, clicking "knit" should create and open the example presentation ("Presentation Ninja - with xaringan ...") as an html file (e.g., "test.html"). The file will likely be opened in an RStudio internal html viewer. Clicking "Open in Browser" will open the file in a browser.
+If successful, clicking "Knit" should create and open the example presentation ("Presentation Ninja - with xaringan ...") as an html file (e.g., "test.html"). The file will likely be opened in an RStudio internal html viewer. Clicking "Open in Browser" will open the file in a browser.
 
-On the day of the workshop, all workshop materials will be available to the participants. These can be downloaded from: https://github.com/singmann/mixed_model_workshop/
-Click on Clone or download -> Download ZIP. This archive will contain all slides and code used at the workshop. Please note that the current content likely does not reflect the content at the day of the workshop.
+All workshop materials are available from: https://github.com/singmann/mixed_model_workshop/releases
+Download the corresponding zip or tar.gz archive ("Source code"). This archive contains all slides and code used at the workshop. 
+Please note that it is possible that I will update the materials until the workshop. 
