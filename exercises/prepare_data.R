@@ -57,3 +57,16 @@ dat <- droplevels(dat[ dat$dv_question == "probability", ])
 dat$dv_question <- NULL
 
 save(dat, file="ssk16_dat_preapred_ex1.rda")
+
+### latest preparation (July 2018)
+
+library("tidyverse")
+
+dat <- dat %>% 
+  rename(B_given_A = CgivenA,
+         if_A_then_B = DV,
+         B_given_A_c = c_given_a,
+         if_A_then_B_c = dv) %>% 
+  select(p_id, i_id, B_given_A, B_given_A_c, if_A_then_B, if_A_then_B_c, rel_cond) 
+
+save(dat, file = "ssk16_dat_tutorial.rda")
