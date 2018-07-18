@@ -1077,18 +1077,23 @@ emmeans(gm1, "stimulus", type = "response")
 
 ---
 
-# Summary 
+### Summary 
 
 - Mixed models allow accounting for dependencies originating from clustered data via random effects.
 - Fixed effects represent the overall/average effect; random effects add offset to specific fixed effects.
 - Random-effects parameters are variances of offsets and covariances among different random-effects parameters.
 - Random-effects assumed to follow normal distribution thereby implementing partial-pooling / hierarchical-shrinkage (regularization).
-- Mixed-models analyses should start with maximal model which includes random slopes for all effects that vary within a random-effects grouping factor.
+- Mixed-model analysis should start with maximal model which includes random slopes for all effects that vary within a random-effects grouping factor.
 - If maximal model fails to converge or is singular/degenerate: Start by removing correlation, then highest-order effects.
+
 
 - Linear mixed models (LMMs) can be extended to generalized linear mixed models (GLMMs) that support different link function and residual distribution (via `glmer` or `mixed`).
 - Bayesian estimation possible: `rstanarm::stan_lmer`, `blme`, `MCMCglmm`, or `brms`.
-- More powerful model class: generalized additive mixed models (GAMM; Baayen, Vasisth, Kliegl, & Bates, 2017).
+- More powerful: generalized additive mixed models (GAMM; Baayen, Vasisth, Kliegl, & Bates, 2017).
+
+
+- An overview of these topics is also provided in: 
+  Singmann and Kellen (in press). An Introduction to Mixed Models for Experimental Psychology. In D. H. Spieler & E. Schumacher (Eds.), *New Methods in Neuroscience and Cognitive Psychology*. Psychology Press. http://singmann.org/download/publications/singmann_kellen-introduction-mixed-models.pdf
 
 ---
 

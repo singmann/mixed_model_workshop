@@ -4,21 +4,23 @@ This repo contains slides and exercise materials for my workshop on statistical 
 
 - The first instance of this workshop was held as part of the [Data on the Mind 2017](http://www.dataonthemind.org/2017-workshop). Title: *Statistical Models for Dependent Data: An Introduction to Mixed Models in R*
 - One day workshop at the University of Freiburg in June 2018. Title: *Mixed Models in R – An Applied Introduction*
+- One day tutorial at CogSci 2018 in Madison (Wisconsin). Title: *Mixed Models in R – An Applied Introduction*
 
 The mixed model part of the workshop are loosely based on my chapter: [An introduction to linear mixed modeling in experimental psychology.](http://singmann.org/download/publications/singmann_kellen-introduction-mixed-models.pdf)
 Read the chapter to get a more comprehensive overview.
 
 
-The repo currently contains two `html` presentations:
+The repo currently contains three `html` presentations:
+
 - [Part 1: Statistical Modeling in R](https://htmlpreview.github.io/?https://github.com/singmann/mixed_model_workshop/blob/master/part1-statistical-modeling-in-r/statistical_modeling.html)
 - [Part 2: Mixed Models in R](https://htmlpreview.github.io/?https://github.com/singmann/mixed_model_workshop/blob/master/part2-mixed-models-in-r/mixed_models.html)
 
 In addition, the repo contains a [`pdf` handout](https://github.com/singmann/mixed_model_workshop/raw/master/handout/mixed_model_handout.pdf) providing a concise overview. 
 
 ### Requirements
-- A recent version of `R` (currently `R 3.5.0`): `https://cran.rstudio.com/`
+- A recent version of `R` (currently `R 3.5.1`): `https://cran.rstudio.com/`
 - `R` packages necessary for the analysis (install with `install.packages("package")` at `R` prompt): `afex` (which automatically installs the additional requirements `emmeans`, `lme4`, and `car`) and `psych` and `MEMSS` (for example data)
-- `R` package `tidyverse` for the exercises (we mainly need `dplyr`, `broom`, `tidyr`, `purrr`, and `ggplot2`).
+- `R` package `tidyverse` as well as `broom` for the exercises (we mainly need `dplyr`, `broom`, `tidyr`, `purrr`, and `ggplot2`).
 - `R` package `xaringan` to compile the slides.
 - `R` package `sjstats` for Intraclass Correlation Coefficient (ICC)
 - Possibly `R` packages `sjPlot` and `MuMIn` for some examples.

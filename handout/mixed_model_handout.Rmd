@@ -1,7 +1,7 @@
 ---
 title: "Mixed Models in R - A Practical Introduction"
 author: "Henrik Singmann"
-date: "June 2018"
+date: "July 2018"
 output: pdf_document
 ---
 
@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 4. Check model fit (e.g., inspect residuals)
 5. Test terms (i.e., main effects and interactions): Pass fitted model to `car::Anova()`
 7. Follow-up tests: 
-    - Estimated marginal means: Pass fitted model to `lsmeans::lsmeans()`/`emmeans::emmeans()`
+    - Estimated marginal means: Pass fitted model to `emmeans::emmeans()`
     - Specify specific contrasts on estimated marginal means (e.g., `contrast()`, `pairs()`)
    
 - `afex` combines fitting (5.) and testing (7.):
