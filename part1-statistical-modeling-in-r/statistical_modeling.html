@@ -53,9 +53,14 @@ class: inline-grey
     - `model.matrix()` and factor codings.
     - Categorical covariates and interactions
 
+
 - Tests of Model Terms/Effects with `car::Anova()`
 - Follow-up Tests with `emmeans`
+
+
 - ANOVAs with `afex`
+
+
 - Problem with Repeated-Measures: IID assumption
   - Solution: Different ways of *pooling*
   - Pooling: worked examples 
@@ -902,10 +907,12 @@ class: inline-grey
   - `*` = main effects plus interaction
   - `0+`/`-1` = no intercept
 
+
 - Categorical variables are transformed into numerical variables using contrast functions (via `model.matrix()`; see Cohen et al., 2002)
   - If models include interactions, orthogonal contrasts (e.g., `contr.sum`) in which the intercept corresponds to the (unweighted) grand mean should be used: `afex::set_sum_contrasts()`
   - Dummy/treatment contrasts (`R` default) lead to simple effects for lower order effects.
   - **Coding only affects interpretation of parameters/tests not overall model fit.**
+
 
 - For models with solely numerical independent variables, suppressing intercept works as expected.
 - For models with categorical independent variables, suppressing intercept or other lower-order effects often leads to very surprising results (and should generally be avoided).
@@ -1130,21 +1137,26 @@ class: inline-grey
 
 Statistical models defined by relationship of covariates and assumption of residual probability distribution. `formula` defines the relationship of covariates, `function` defines distributional assumption.
 
-Most models assume independent data points (i.e., no replicates or repeated measures):  
+
+- (1) Most models assume independent data points (i.e., no replicates or repeated measures):  
 - `lm()` linear model (normal distribution of residuals, includes multivariate IVs)
 - `glm()` generalized linear model (other residual distribution, e.g., binomial, Poisson)
 - `MASS::rlm()` robust linear model
 - `MASS::polr()` ordered logistic or probit regression
 - `MASS::loglm()` log-linear model (for contingency tables)
 - `nnet::multinom()` models for multinomial data
+- `ordinal::clm()` cumulative link models for ordinal data
 
-Functions supporting repeated-measures usually require more complicated formulas/model specification:  
+
+- (2) Models support repeated-measures usually via random-effects parameters:
 - `nlme::lme()` linear mixed-effects models (generally superseded by `lme4`)
 - `lme4::lmer()` linear mixed-effects models (modern implementation)
 - `lme4::glmer()` generalized linear mixed-effects models
+- `ordinal::clmm2()` cumulative link mixed models for ordinal data
 - `mcmcGLMM` Bayesian generalized linear mixed-effects models
 - `rstan::stan_lmer()`/`rstan::stan_glmer()` **Bayesian (generalized) linear mixed-effects models**
-- `brms::brm` **general framework for formula-based Bayesian models. Extremely flexible.**
+- `brms::brm()` **general framework for formula-based Bayesian models; extremely flexible**
+
 
 ---
 class: inline-grey
@@ -1250,8 +1262,10 @@ class: inline-grey
   - Independence assumption refers to residuals: After taking structure of model (i.e., parameters) into account, probability of a data point having a specific value is independent of all other data points.
   - Identical distribution: All observations sampled from same distribution.
 
+
 - For repeated-measures independence assumption often violated (e.g., data points from one participant more likely to be similar to each other).
 - Violation of independence assumption can have dramatic consequences on statistical inferences from a model (e.g., increased or decreased Type I errors).
+
 
 - Three approaches for dealing with repeated-measures (e.g., Gelman &amp; Hill, 2007):
   1. *Complete pooling*: Ignore dependency in data (often not appropriate, results likely biased, not trustworthy)
