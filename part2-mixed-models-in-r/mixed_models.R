@@ -9,26 +9,85 @@ options(width=110)
 options(digits = 4)
 
 ## ---- echo=FALSE, results='hide', message=FALSE--------------------------
-load("../exercises/ssk16_dat_preapred.rda")
+load("ssk16_dat_tutorial.rda") 
 str(dat)
-datr <- droplevels(dat[dat$rel_cond != "NE" & dat$dv_question == "probability",])
+datr <- droplevels(dat[dat$rel_cond != "NE",])
 library("ggplot2")
 afex::set_sum_contrasts()
 library("lme4")
 
 ## ------------------------------------------------------------------------
-m_fixed <- lm(dv ~ c_given_a*rel_cond, datr)
+m_fixed <- lm(if_A_then_B_c ~ B_given_A_c, datr)
+summary(m_fixed)
+
+## ---- echo=FALSE, dpi=500, fig.width=3.5, fig.height=3.5-----------------
+par(pty="s")
+limits <- c(-0.5, 0.5)
+plot(if_A_then_B_c ~ B_given_A_c, datr, asp = 1, ylim=limits, xlim=limits)
+abline(m_fixed)
+
+## ---- echo=FALSE, dpi=300, fig.width=3.5, fig.height=4-------------------
+par(pty="s")
+plot(if_A_then_B_c ~ B_given_A_c, datr, asp = 1, ylim=limits, xlim=limits)
+abline(m_fixed)
+
+## ---- echo=FALSE, dpi=500, fig.width=3.5, fig.height=4, warning=FALSE----
+m_tmp <- lmer(if_A_then_B_c ~ B_given_A_c + (0+B_given_A_c|p_id), datr)
+rnd_coefs <- coef(m_tmp)$p_id
+par(pty="s")
+plot(if_A_then_B_c ~ B_given_A_c, datr, 
+     asp = 1, ylim=limits, xlim=limits)
+for (i in seq_len(nrow(rnd_coefs))) 
+  abline(a = rnd_coefs[i,1], 
+         b = rnd_coefs[i,2],
+         col = "lightgrey")
+abline(m_fixed)
+
+## ---- echo=FALSE, dpi=300, fig.width=3.5, fig.height=3.5, warning=FALSE, out.width='25%'----
+m_tmp <- lmer(if_A_then_B_c ~ B_given_A_c + (1+B_given_A_c|p_id), datr)
+rnd_coefs <- coef(m_tmp)$p_id
+rnd_coefs <- coef(m_tmp)$p_id
+par(pty="s")
+plot(if_A_then_B_c ~ B_given_A_c, datr,
+     asp = 1, ylim=limits, xlim=limits)
+for (i in seq_len(nrow(rnd_coefs))) 
+  abline(a = rnd_coefs[i,1], 
+         b = rnd_coefs[i,2],
+         col = "lightgrey")
+abline(m_fixed)
+
+## ---- echo=FALSE, dpi=300, fig.width=3.5, fig.height=4, warning=FALSE , out.width='25%'----
+m_tmp <- lmer(if_A_then_B_c ~ B_given_A_c + (1+B_given_A_c|p_id), datr)
+rnd_coefs <- coef(m_tmp)$p_id
+rnd_coefs <- coef(m_tmp)$p_id
+par(pty="s")
+plot(if_A_then_B_c ~ B_given_A_c, datr,
+     asp = 1, ylim=limits, xlim=limits)
+for (i in seq_len(nrow(rnd_coefs))) 
+  abline(a = rnd_coefs[i,1], 
+         b = rnd_coefs[i,2],
+         col = "lightgrey")
+abline(m_fixed)
+
+## ---- echo=FALSE, dpi=500, fig.width=7, fig.height=4, warning=FALSE, out.width='80%'----
+ggplot(datr, aes(y = if_A_then_B_c, x = B_given_A_c)) +
+  geom_point() +
+  facet_wrap(~ rel_cond) + 
+  theme_light() + coord_fixed()
+
+## ------------------------------------------------------------------------
+m_fixed <- lm(if_A_then_B_c ~ 
+                B_given_A_c*rel_cond, datr)
 summary(m_fixed)
 
 ## ---- echo=FALSE, dpi=500, fig.width=7, fig.height=4---------------------
 par(mfrow = c(1,2))
 par(pty="s")
-limits <- c(-0.5, 0.5)
-plot(dv ~ c_given_a, datr, subset = rel_cond == "PO", 
+plot(if_A_then_B_c ~ B_given_A_c, datr, subset = rel_cond == "PO", 
      asp = 1, ylim=limits, xlim=limits, main ="PO")
 abline(a = coef(m_fixed)[1] + coef(m_fixed)[3], 
        b = coef(m_fixed)[2] + coef(m_fixed)[4])
-plot(dv ~ c_given_a, datr, subset = rel_cond == "IR", 
+plot(if_A_then_B_c ~ B_given_A_c, datr, subset = rel_cond == "IR", 
      asp = 1, ylim=limits, xlim=limits, main ="IR")
 abline(a = coef(m_fixed)[1] - coef(m_fixed)[3], 
        b = coef(m_fixed)[2] - coef(m_fixed)[4])
@@ -36,23 +95,21 @@ abline(a = coef(m_fixed)[1] - coef(m_fixed)[3],
 ## ---- echo=FALSE, dpi=500, fig.width=7, fig.height=4---------------------
 par(mfrow = c(1,2))
 par(pty="s")
-limits <- c(-0.5, 0.5)
-plot(dv ~ c_given_a, datr, subset = rel_cond == "PO", 
+plot(if_A_then_B_c ~ B_given_A_c, datr, subset = rel_cond == "PO", 
      asp = 1, ylim=limits, xlim=limits, main ="PO")
 abline(a = coef(m_fixed)[1] + coef(m_fixed)[3], 
        b = coef(m_fixed)[2] + coef(m_fixed)[4])
-plot(dv ~ c_given_a, datr, subset = rel_cond == "IR", 
+plot(if_A_then_B_c ~ B_given_A_c, datr, subset = rel_cond == "IR", 
      asp = 1, ylim=limits, xlim=limits, main ="IR")
 abline(a = coef(m_fixed)[1] - coef(m_fixed)[3], 
        b = coef(m_fixed)[2] - coef(m_fixed)[4])
 
 ## ---- echo=FALSE, dpi=500, fig.width=7, fig.height=4, warning=FALSE------
-m_tmp <- lmer(dv ~ c_given_a*rel_cond + (0+c_given_a|p_id), datr)
+m_tmp <- lmer(if_A_then_B_c ~ B_given_A_c*rel_cond + (0+B_given_A_c|p_id), datr)
 rnd_coefs <- coef(m_tmp)$p_id
 par(mfrow = c(1,2))
 par(pty="s")
-limits <- c(-0.5, 0.5)
-plot(dv ~ c_given_a, datr, subset = rel_cond == "PO", 
+plot(if_A_then_B_c ~ B_given_A_c, datr, subset = rel_cond == "PO", 
      asp = 1, ylim=limits, xlim=limits, main ="PO")
 for (i in seq_len(nrow(rnd_coefs))) 
   abline(a = rnd_coefs[i,1] + rnd_coefs[i,3], 
@@ -60,7 +117,7 @@ for (i in seq_len(nrow(rnd_coefs)))
          col = "lightgrey")
 abline(a = coef(m_fixed)[1] + coef(m_fixed)[3], 
        b = coef(m_fixed)[2] + coef(m_fixed)[4])
-plot(dv ~ c_given_a, datr, subset = rel_cond == "IR", 
+plot(if_A_then_B_c ~ B_given_A_c, datr, subset = rel_cond == "IR", 
      asp = 1, ylim=limits, xlim=limits, main ="IR")
 for (i in seq_len(nrow(rnd_coefs))) 
   abline(a = rnd_coefs[i,1] - rnd_coefs[i,3], 
@@ -70,12 +127,11 @@ abline(a = coef(m_fixed)[1] - coef(m_fixed)[3],
        b = coef(m_fixed)[2] - coef(m_fixed)[4])
 
 ## ---- echo=FALSE, dpi=500, fig.width=7, fig.height=3.5, warning=FALSE----
-m_tmp <- lmer(dv ~ c_given_a*rel_cond + (1+c_given_a|p_id), datr)
+m_tmp <- lmer(if_A_then_B_c ~ B_given_A_c*rel_cond + (1+B_given_A_c|p_id), datr)
 rnd_coefs <- coef(m_tmp)$p_id
 par(mfrow = c(1,2))
 par(pty="s")
-limits <- c(-0.5, 0.5)
-plot(dv ~ c_given_a, datr, subset = rel_cond == "PO", 
+plot(if_A_then_B_c ~ B_given_A_c, datr, subset = rel_cond == "PO", 
      asp = 1, ylim=limits, xlim=limits, main ="PO")
 for (i in seq_len(nrow(rnd_coefs))) 
   abline(a = rnd_coefs[i,1] + rnd_coefs[i,3], 
@@ -83,53 +139,7 @@ for (i in seq_len(nrow(rnd_coefs)))
          col = "lightgrey")
 abline(a = coef(m_fixed)[1] + coef(m_fixed)[3], 
        b = coef(m_fixed)[2] + coef(m_fixed)[4])
-plot(dv ~ c_given_a, datr, subset = rel_cond == "IR", 
-     asp = 1, ylim=limits, xlim=limits, main ="IR")
-for (i in seq_len(nrow(rnd_coefs))) 
-  abline(a = rnd_coefs[i,1] - rnd_coefs[i,3], 
-         b = rnd_coefs[i,2] - rnd_coefs[i,4],
-         col = "lightgrey")
-abline(a = coef(m_fixed)[1] - coef(m_fixed)[3], 
-       b = coef(m_fixed)[2] - coef(m_fixed)[4])
-
-## ---- echo=FALSE, dpi=500, fig.width=7, fig.height=4, warning=FALSE------
-m_tmp <- lmer(dv ~ c_given_a*rel_cond + (0+c_given_a|p_id), datr)
-rnd_coefs <- coef(m_tmp)$p_id
-par(mfrow = c(1,2))
-par(pty="s")
-limits <- c(-0.5, 0.5)
-plot(dv ~ c_given_a, datr, subset = rel_cond == "PO", 
-     asp = 1, ylim=limits, xlim=limits, main ="PO")
-for (i in seq_len(nrow(rnd_coefs))) 
-  abline(a = rnd_coefs[i,1] + rnd_coefs[i,3], 
-         b = rnd_coefs[i,2] + rnd_coefs[i,4],
-         col = "lightgrey")
-abline(a = coef(m_fixed)[1] + coef(m_fixed)[3], 
-       b = coef(m_fixed)[2] + coef(m_fixed)[4])
-plot(dv ~ c_given_a, datr, subset = rel_cond == "IR", 
-     asp = 1, ylim=limits, xlim=limits, main ="IR")
-for (i in seq_len(nrow(rnd_coefs))) 
-  abline(a = rnd_coefs[i,1] - rnd_coefs[i,3], 
-         b = rnd_coefs[i,2] - rnd_coefs[i,4],
-         col = "lightgrey")
-abline(a = coef(m_fixed)[1] - coef(m_fixed)[3], 
-       b = coef(m_fixed)[2] - coef(m_fixed)[4])
-
-## ---- echo=FALSE, dpi=500, fig.width=7, fig.height=4, warning=FALSE------
-m_tmp <- lmer(dv ~ c_given_a*rel_cond + (1+c_given_a|p_id), datr)
-rnd_coefs <- coef(m_tmp)$p_id
-par(mfrow = c(1,2))
-par(pty="s")
-limits <- c(-0.5, 0.5)
-plot(dv ~ c_given_a, datr, subset = rel_cond == "PO", 
-     asp = 1, ylim=limits, xlim=limits, main ="PO")
-for (i in seq_len(nrow(rnd_coefs))) 
-  abline(a = rnd_coefs[i,1] + rnd_coefs[i,3], 
-         b = rnd_coefs[i,2] + rnd_coefs[i,4],
-         col = "lightgrey")
-abline(a = coef(m_fixed)[1] + coef(m_fixed)[3], 
-       b = coef(m_fixed)[2] + coef(m_fixed)[4])
-plot(dv ~ c_given_a, datr, subset = rel_cond == "IR", 
+plot(if_A_then_B_c ~ B_given_A_c, datr, subset = rel_cond == "IR", 
      asp = 1, ylim=limits, xlim=limits, main ="IR")
 for (i in seq_len(nrow(rnd_coefs))) 
   abline(a = rnd_coefs[i,1] - rnd_coefs[i,3], 
@@ -140,19 +150,19 @@ abline(a = coef(m_fixed)[1] - coef(m_fixed)[3],
 
 ## ------------------------------------------------------------------------
 library("lme4")
-m_p_max <- lmer(dv ~ c_given_a*rel_cond + 
-                  (c_given_a*rel_cond|p_id), datr)
+m_p_max <- 
+  lmer(if_A_then_B_c ~ B_given_A_c*rel_cond + 
+         (B_given_A_c*rel_cond|p_id), datr)
 summary(m_p_max)$varcor
 summary(m_p_max)$coefficients
 
 
 ## ---- echo=FALSE, dpi=500, fig.width=7, fig.height=4, warning=FALSE------
-m_tmp <- lmer(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr)
+m_tmp <- lmer(if_A_then_B_c ~ B_given_A_c*rel_cond + (B_given_A_c*rel_cond|p_id), datr)
 rnd_coefs <- coef(m_tmp)$p_id
 par(mfrow = c(1,2))
 par(pty="s")
-limits <- c(-0.5, 0.5)
-plot(dv ~ c_given_a, datr, subset = rel_cond == "PO", 
+plot(if_A_then_B_c ~ B_given_A_c, datr, subset = rel_cond == "PO", 
      asp = 1, ylim=limits, xlim=limits, main ="PO")
 for (i in seq_len(nrow(rnd_coefs))) 
   abline(a = rnd_coefs[i,1] + rnd_coefs[i,3], 
@@ -160,7 +170,7 @@ for (i in seq_len(nrow(rnd_coefs)))
          col = "lightgrey")
 abline(a = coef(m_fixed)[1] + coef(m_fixed)[3], 
        b = coef(m_fixed)[2] + coef(m_fixed)[4])
-plot(dv ~ c_given_a, datr, subset = rel_cond == "IR", 
+plot(if_A_then_B_c ~ B_given_A_c, datr, subset = rel_cond == "IR", 
      asp = 1, ylim=limits, xlim=limits, main ="IR")
 for (i in seq_len(nrow(rnd_coefs))) 
   abline(a = rnd_coefs[i,1] - rnd_coefs[i,3], 
@@ -170,9 +180,9 @@ abline(a = coef(m_fixed)[1] - coef(m_fixed)[3],
        b = coef(m_fixed)[2] - coef(m_fixed)[4])
 
 ## ------------------------------------------------------------------------
-m_max <- lmer(dv ~ c_given_a*rel_cond + 
-                (c_given_a*rel_cond|p_id) + 
-                (c_given_a*rel_cond|i_id), 
+m_max <- lmer(if_A_then_B_c ~ B_given_A_c*rel_cond + 
+                (B_given_A_c*rel_cond|p_id) + 
+                (B_given_A_c*rel_cond|i_id), 
               datr)
 
 ## ------------------------------------------------------------------------
@@ -185,8 +195,8 @@ library("ggplot2")
 library("tidyr")
 no_pooling_estimates <- datr %>% 
   group_by(p_id, rel_cond) %>% 
-  do(tidy(lm(dv~c_given_a, .))) %>% 
-  filter(term == "c_given_a") %>% 
+  do(tidy(lm(if_A_then_B_c~B_given_A_c, .))) %>% 
+  filter(term == "B_given_A_c") %>% 
   rename(no_pooling = estimate)
 
 partial_pooling_estimates <- data.frame(p_id = rownames(coef(m_max)$p_id),
@@ -218,16 +228,17 @@ ggplot(data = estimates_l, aes(estimate)) +
 
 ## ---- echo=FALSE, out.width='1000px', out.height='500px', dpi = 500, fig.width=10, fig.height=5----
 
-df_gravity <- as.data.frame(summary(lsmeans::lstrends(m_fixed, "rel_cond", var = "c_given_a")))
+df_gravity <- as.data.frame(summary(emmeans::emtrends(m_fixed, "rel_cond", var = "B_given_A_c")))
 df_gravity <- df_gravity %>% 
-  select(rel_cond, c_given_a.trend) %>% 
-  spread(rel_cond, c_given_a.trend) %>% 
+  select(rel_cond, B_given_A_c.trend) %>% 
+  spread(rel_cond, B_given_A_c.trend) %>% 
   mutate(key = "complete_pooling")
 
 estimates_l %>% 
   select(-std.error, -statistic, -p.value) %>% 
   spread(rel_cond, estimate) %>% 
   na.omit() %>% 
+  ungroup %>% 
   ggplot() + 
   aes(x = PO, y = IR, color = key) + 
   geom_point(size = 2) + 
@@ -242,19 +253,20 @@ estimates_l %>%
 
 ## ---- eval=FALSE---------------------------------------------------------
 ## library("afex")
-## mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "KR")
-## mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "S")
-## mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "LRT")
-## # mixed(dv ~ c_given_a*rel_cond + (c_given_a*rel_cond|p_id), datr, method = "PB")
+## mixed(if_A_then_B ~ B_given_A*rel_cond + (B_given_A*rel_cond|p_id), datr, method = "KR")
+## mixed(if_A_then_B ~ B_given_A*rel_cond + (B_given_A*rel_cond|p_id), datr, method = "S")
+## mixed(if_A_then_B ~ B_given_A*rel_cond + (B_given_A*rel_cond|p_id), datr, method = "LRT")
+## # mixed(if_A_then_B ~ B_given_A*rel_cond + (B_given_A*rel_cond|p_id), datr, method = "PB")
 
 ## ---- echo=FALSE, results='hide', message=FALSE--------------------------
 library("afex")
 
 ## ---- results='hide', message=FALSE--------------------------------------
-m_red <- mixed(dv ~ c_given_a*rel_cond + 
-                 (c_given_a*rel_cond||p_id), 
-               datr, method = "S", 
-               expand_re = TRUE)
+m_red <- mixed(
+  if_A_then_B_c ~ B_given_A_c*rel_cond + 
+    (B_given_A_c*rel_cond||p_id), 
+  datr, method = "S", 
+  expand_re = TRUE)
 
 ## ------------------------------------------------------------------------
 summary(m_red)$varcor
@@ -267,7 +279,7 @@ rnd_coefs <- coef(m_red$full_model)$p_id
 par(mfrow = c(1,2))
 par(pty="s")
 limits <- c(-0.5, 0.5)
-plot(dv ~ c_given_a, datr, subset = rel_cond == "PO", 
+plot(if_A_then_B_c ~ B_given_A_c, datr, subset = rel_cond == "PO", 
      asp = 1, ylim=limits, xlim=limits, main ="PO")
 for (i in seq_len(nrow(rnd_coefs))) 
   abline(a = rnd_coefs[i,4] + rnd_coefs[i,6] + rnd_coefs[i,2], 
@@ -275,7 +287,7 @@ for (i in seq_len(nrow(rnd_coefs)))
          col = "lightgrey")
 abline(a = coef(m_fixed)[1] + coef(m_fixed)[3], 
        b = coef(m_fixed)[2] + coef(m_fixed)[4])
-plot(dv ~ c_given_a, datr, subset = rel_cond == "IR", 
+plot(if_A_then_B_c ~ B_given_A_c, datr, subset = rel_cond == "IR", 
      asp = 1, ylim=limits, xlim=limits, main ="IR")
 for (i in seq_len(nrow(rnd_coefs))) 
   abline(a = rnd_coefs[i,4] - (rnd_coefs[i,6] + rnd_coefs[i,2]), 
@@ -284,37 +296,79 @@ for (i in seq_len(nrow(rnd_coefs)))
 abline(a = coef(m_fixed)[1] - coef(m_fixed)[3], 
        b = coef(m_fixed)[2] - coef(m_fixed)[4])
 
-## ---- echo=FALSE, results='hide', message=FALSE--------------------------
-library("afex")
-load("fitted_lmms.rda")
-
 ## ---- eval=FALSE---------------------------------------------------------
-## library("afex")
-## m_full <- mixed(dv ~ c_given_a*rel_cond*dv_question +
-##                        (rel_cond*c_given_a|p_id) +
-##                        (rel_cond*c_given_a*dv_question|i_id),
-##                      dat,
-##                      control = lmerControl(optCtrl = list(maxfun=1e8)),
-##                      method = "S")
-## m_full
+## m_fhch <- mixed(log_rt ~ task*stimulus*density*frequency*length +
+##                   (stimulus*density*frequency*length||id) +
+##                   (task||item), fhch2010,
+##                 method = "S", expand_re = TRUE)
+
+## ---- message=FALSE------------------------------------------------------
+m_max2 <- mixed(
+  if_A_then_B_c ~ B_given_A_c*rel_cond + 
+    (B_given_A_c*rel_cond||p_id) + 
+    (B_given_A_c*rel_cond||i_id), 
+  datr, method = 'S', expand_re = TRUE)
+nice(m_max2) %>% as.data.frame()
+
+## ------------------------------------------------------------------------
+emm_options(lmer.df = "asymptotic") 
+# or "Kenward-Roger" or "Satterthwaite"
+emmeans(m_max2, "rel_cond")
+
+## ------------------------------------------------------------------------
+emm_options(lmer.df = "asymptotic") 
+# or "Kenward-Roger" or "Satterthwaite"
+emtrends(m_max2, "rel_cond", var = "B_given_A_c")
+
+## ------------------------------------------------------------------------
+fixef(m_max2$full_model)[2] + fixef(m_max2$full_model)[4] 
+
+## ------------------------------------------------------------------------
+data("Machines", package = "MEMSS")
+
+## ---- include=FALSE------------------------------------------------------
+library("tidyverse")
+
+## ---- fig.height=4, dev='svg', echo=FALSE--------------------------------
+ggplot(Machines, aes(x = Machine, y = score)) +
+  geom_point() + 
+  facet_wrap(~ Worker) + 
+  theme_light()
+
+## ------------------------------------------------------------------------
+mach1 <- lm(score ~ Machine, Machines)
+car::Anova(mach1, type = 3)
+
+## ------------------------------------------------------------------------
+data("Machines", package = "MEMSS")
+
+## ---- include=FALSE------------------------------------------------------
+library("tidyverse")
+
+## ------------------------------------------------------------------------
+mach1 <- lm(score ~ Machine, Machines)
+car::Anova(mach1, type = 3)
+
+## ---- results="hide"-----------------------------------------------------
+(mach2 <- mixed(score~Machine+
+                (Machine|Worker), Machines))
 
 ## ---- echo=FALSE---------------------------------------------------------
-m_full
+mach2 
 
 ## ------------------------------------------------------------------------
-lsm.options(lmer.df = "asymptotic") # or "Kenward-Roger" or "Satterthwaite"
-lstrends(m_full, "rel_cond", var = "c_given_a")
+pairs(emmeans(mach1, "Machine"),
+      adjust = "holm")
 
 ## ------------------------------------------------------------------------
-# fixef(m_full$full_model)[2] + fixef(m_full$full_model)[6]
-# fixef(m_full$full_model)[2] + fixef(m_full$full_model)[7]
-fixef(m_full$full_model)[2] - fixef(m_full$full_model)[6] - fixef(m_full$full_model)[7]
+pairs(emmeans(mach2, "Machine"),
+      adjust = "holm")
 
 ## ---- echo=FALSE, message=FALSE, results='hide'--------------------------
 library("sjstats")
 
 ## ------------------------------------------------------------------------
-m1 <- lmer(dv ~ 1 + (1|p_id), datr)
+m1 <- lmer(if_A_then_B_c ~ 1 + (1|p_id), datr)
 # summary(m1)
 # Random effects:
 #  Groups   Name        Variance Std.Dev.
@@ -327,7 +381,7 @@ library("sjstats")
 icc(m1)
 
 ## ------------------------------------------------------------------------
-m1 <- lmer(dv ~ 1 + (1|p_id), datr)
+m1 <- lmer(if_A_then_B_c ~ 1 + (1|p_id), datr)
 # summary(m1)
 # Random effects:
 #  Groups   Name        Variance Std.Dev.
@@ -337,16 +391,18 @@ m1 <- lmer(dv ~ 1 + (1|p_id), datr)
 
 icc(m1)
 
-## ------------------------------------------------------------------------
-m2 <- lmer(dv ~ 1 + (rel_cond:c_given_a|p_id), 
-           datr)
+## ---- warning=FALSE, message=FALSE---------------------------------------
+m2 <- lmer(if_A_then_B_c ~ 1 + 
+             (rel_cond:B_given_A_c|p_id), datr)
 # summary(m2)
- # Groups   Name                 Variance Std.Dev. Corr       
- # p_id     (Intercept)          0.0398   0.200               
- #          rel_condPO:c_given_a 1.0186   1.009    -0.94      
- #          rel_condIR:c_given_a 0.3262   0.571    -0.48  0.75
- # Residual                      0.0570   0.239 
+ # Groups   Name                   Variance Std.Dev. Corr       
+ # p_id     (Intercept)            0.0398   0.200               
+ #          rel_condPO:B_given_A_c 1.0186   1.009    -0.94      
+ #          rel_condIR:B_given_A_c 0.3262   0.571    -0.48  0.75
+ # Residual                        0.0570   0.239               
 icc(m2)
+## Caution! ICC for random-slope-intercept models usually 
+## not meaningful. See 'Note' in `?icc`.
 
 ## ---- eval=FALSE---------------------------------------------------------
 ## data("fhch2010")
@@ -365,7 +421,7 @@ icc(m2)
 ## ## ---
 ## ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '+' 0.1 ' ' 1
 ## ## Warning messages: [...]
-## lsmeans(gm1, "stimulus", type = "response")
+## emmeans(gm1, "stimulus", type = "response")
 ## ##  stimulus   prob       SE df asymp.LCL asymp.UCL
 ## ##  word     0.9907 0.002323 NA    0.9849    0.9943
 ## ##  nonword  0.9857 0.003351 NA    0.9774    0.9909
@@ -375,7 +431,7 @@ icc(m2)
 
 ## ---- fig.width=5, fig.height=4------------------------------------------
 plot(m_max, 
-     resid(.,scaled=TRUE) ~ c_given_a | rel_cond)
+     resid(.,scaled=TRUE) ~ B_given_A | rel_cond)
 
 ## ---- fig.width=4, fig.height=4------------------------------------------
 lattice::qqmath(m_max)
@@ -387,13 +443,13 @@ lattice::qqmath(m_max)
 
 ## ---- eval=FALSE, include=FALSE------------------------------------------
 ## library("afex")
-## load("../exercises/ssk16_dat_preapred.rda")
+## load("ssk16_dat_tutorial.rda")
 
 ## ---- eval=FALSE, include=FALSE------------------------------------------
 ## 
-## m_full <- mixed(dv ~ c_given_a*rel_cond*dv_question +
-##                        (rel_cond*c_given_a|p_id) +
-##                        (rel_cond*c_given_a*dv_question|i_id),
+## m_full <- mixed(if_A_then_B_c ~ B_given_A_c*rel_cond +
+##                        (rel_cond*B_given_A_c|p_id) +
+##                        (rel_cond*B_given_A_c|i_id),
 ##                      dat,
 ##                      control = lmerControl(optCtrl = list(maxfun=1e8)),
 ##                      method = "S")
