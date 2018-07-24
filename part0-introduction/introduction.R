@@ -65,7 +65,7 @@ iris2$Spec
 library("dplyr")
 iris2 %>% 
   filter(Species == "setosa") %>% 
-  summarise_if(is.numeric, mean)
+  summarise(mean(Sepal.Length))
 
 ## ------------------------------------------------------------------------
 iris2 %>%

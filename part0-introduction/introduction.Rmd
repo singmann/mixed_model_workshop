@@ -31,7 +31,7 @@ options(digits = 4)
 class: inline-grey
 # Outline
 
-1. Introduction
+1. Introduction: Modern `R`
 2. Statistical Modeling in `R`
 3. Dealing with repeated-measures (pooling)
 4. Mixed models
@@ -111,6 +111,7 @@ Conceptual model of data analysis (source: [Wickham & Grolemund (2017): R for Da
   - and even for writing papers (i.e., [`papaja`](https://github.com/crsh/papaja)).
 
 --
+
 
 - *Warning:* If you send an `RMarkdown` `html` report, it needs to be downloaded before figures are visible (e.g., opening it directly from `gmail` does not show plots)!
 
@@ -197,7 +198,7 @@ class: small
 Important chunk options:
 - `echo`: Display code in output document (default = `TRUE`)
 - `eval`: Run code in chunk (default = `TRUE`)
-- `include`: Include chunk in doc after running (default = `TRUE`)
+- `include`: Include chunk and output in doc after running (default = `TRUE`)
 - `fig.height` and `fig.width`: Dimensions of plots in inches
 - `error`: Display error messages in doc (`TRUE`) or stop render when errors occur (`FALSE`) (default = `FALSE`)
 - `warning`: display code warnings in document (default = `TRUE`)
@@ -373,7 +374,7 @@ class: small
 library("dplyr")
 iris2 %>% 
   filter(Species == "setosa") %>% 
-  summarise_if(is.numeric, mean)
+  summarise(mean(Sepal.Length))
 ```
 
 ]
