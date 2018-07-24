@@ -765,7 +765,7 @@ class: center, middle, inverse
 (see handout or file in `exercises` folder)
 
 ---
-class: small
+class: small, inline-grey
 
 # Freeman, Heathcote, Chalmers, and Hockley (2010): Maximal Model
 
