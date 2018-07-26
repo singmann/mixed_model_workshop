@@ -669,7 +669,7 @@ Statistical models defined by relationship of covariates and assumption of resid
 - `lme4::glmer()` generalized linear mixed-effects models
 - `ordinal::clmm2()` cumulative link mixed models for ordinal data
 - `mcmcGLMM` Bayesian generalized linear mixed-effects models
-- `rstan::stan_lmer()`/`rstan::stan_glmer()` **Bayesian (generalized) linear mixed-effects models**
+- `rstanarm::stan_lmer()`/`stan_glmer()` **Bayesian (generalized) linear mixed-effects models**
 - `brms::brm()` **general framework for formula-based Bayesian models; extremely flexible**
 
 
