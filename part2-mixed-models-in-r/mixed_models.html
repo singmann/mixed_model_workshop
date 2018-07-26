@@ -531,7 +531,28 @@ class: small
 ### Types of Random Effects
 
 ![](random_effect_types.png)
+---
+class: small, inline-grey
 
+### Crossed Versus Nested
+
+
+- Factor `A` is **crossed** with factor `B` if multiple levels of `A` appear within multiple levels of `B`. Note that this definition allows for missing values (i.e., it does not need to hold that all levels of `A` appear in all levels of `B`). For example:
+  - Levels `a1`, `a2`, ... of `A`  appear in `b1` of `B` and in `b2` of `B`, etc. 
+  - A within-subject factor (e.g., `congruency`) is crossed with participants. 
+  - If each participant responds to a random subset of items and each item is responded to by several participants, `participant` and `item` are crossed.
+
+
+- Factor `A` is **nested** within factor `B` if some levels of `A` appear only within specific levels of factor `B`. E.g.:
+  - Levels `a1`, `a2`, and `a3` of `A`  appear only in `b1` of `B` and `a4`, `a5`, and `a6` of `A`  appear only in `b2` of `B` ...
+  - If student can be member of one class only and several classes were observed, factor `student` is nested within factor `class`.
+
+
+- Both dependency structures dealt with in same conceptual manner, via independent random effects-parameters. Specifically, both need independent random effects terms in model formula. For example:
+  - For `students` nested within `class`, where each student has unique label (i.e., `student` id 1 is assigned to exactly one student and not to different students in different classes), at least:  
+    `... + (1|student) + (1|class)`
+  - If additional factor `A` is crossed with `class`, but not with `student` (e.g., some students in each class receive treatment `a1`,  some others `a2`), by-class random slopes need to be added:  
+    `... + (1|student) + (A|class)`
 
 ---
 
@@ -545,7 +566,7 @@ class: small
 - assumed to follow normal distribution which provides hierarchical shrinkage, thereby avoiding over-fitting
 - should be added to each parameter that varies within the levels of a random-effects grouping factor (i.e., factor is *crossed* with random-effects grouping factor)
 - mixed model can have random-effects for multiple random-effects grouping factor (e.g., factors one wants to generalize over)
-- whether data has only a single random-effects grouping factor, crossed random-effects grouping factor, or nested random-effects grouping factor, random-effects parameters is only mechanism for handling dependencies
+- whether data has only a single random-effects grouping factor, crossed random-effects grouping factors, or nested random-effects grouping factors, random-effects parameters is only mechanism for handling dependencies
 
 ---
 class: center, middle, inverse
