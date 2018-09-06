@@ -83,7 +83,7 @@ Conceptual model of data analysis (source: [Wickham & Grolemund (2017): R for Da
     - [`readr`](https://readr.tidyverse.org/): Reading data in, the `RStudio` way.
     - Data wrangling with [`tibble`](http://tibble.tidyverse.org/), [`magrittr`](http://magrittr.tidyverse.org/), [`tidyr`](http://tidyr.tidyverse.org/), and [`dplyr`](http://dplyr.tidyverse.org/): Coherent set of functions for tidying, transforming, and working with rectangular data. Supersedes many base `R` functions and makes common problems easy. 
     - [`ggplot2`](http://ggplot2.tidyverse.org/): System for data visualization.
-    - [`purr`](http://purrr.tidyverse.org/) and [`broom`](https://broom.tidyverse.org/): Advanced modeling with the `tidyverse`.
+    - [`purrr`](http://purrr.tidyverse.org/) and [`broom`](https://broom.tidyverse.org/): Advanced modeling with the `tidyverse`.
 
 --
 
