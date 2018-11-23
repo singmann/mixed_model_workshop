@@ -1,7 +1,7 @@
 ---
 title: "Mixed Models in R - A Practical Introduction"
 author: "Henrik Singmann"
-date: "July 2018"
+date: "November 2018"
 output: pdf_document
 ---
 
@@ -60,13 +60,25 @@ knitr::opts_chunk$set(echo = TRUE)
 - Type III tests require orthogonal contrasts (e.g.,`contr.sum`); recommended:
     + For experimental designs in which imbalance is completely random and not structural,
     + Complete cross-over interactions (i.e., main effects in presence of interaction) possible.
-- Type II are more appropriate if imbalance is structural (i.e., observational data; maybe here).
+- Type II are more appropriate if imbalance is structural (i.e., observational data).
+
+### Follow-Up Tests
+- Choice of follow-up test after significant interactions based on research questions
+    - Simple effects (e.g., main effect of one factor conditional on other factor[s])
+    - Comparison of specific cell means
+- Two approaches for follow-up tests:
+    - Model based using `emmeans` (assumes assumptions hold and uses shared error term)
+    - Splitting data and running separate models for each split (assumes assumptions do not hold, use separate error terms)
+- When splitting data or using `emmeans::test()`, adjustment for multiple testing needs to be done by hand; e.g., pass $p$-values to `p.adjust()`
+
+
 
 ### Follow-up Tests with `emmeans` (Formerly `lsmeans`)
-- `emmeans(model, ~factor)`  produces estimates marginal means (or least-square means for linear regression) for model terms (e.g., `emmeans(m6, ~education*gender)`).
+- `emmeans(model, c("factor"))` (or `emmeans(model, ~factor)`)  produces estimates marginal means (or least-square means for linear regression) for model terms (e.g., `emmeans(m6, c("education", "gender"))`).
 - Additional functions allow specifying contrasts/follow-up tests on the means, e.g.:
     + `pairs()` tests all pairwise comparisons among means.
     + `contrast()` allows to define arbitrary contrasts on marginal means.
+    + `test(..., joint = TRUE)` for joint tests (e.g., simple effects if using `by`).
     + For more examples see vignettes: https://cran.r-project.org/package=emmeans 
 
 ### ANOVAs with afex
@@ -78,6 +90,7 @@ knitr::opts_chunk$set(echo = TRUE)
     `aov_4(dv ~ between_factor + (within_factor|id), data)`
     + `afex::aov_ez()` allows specification of ANOVA using characters. For example:  
     `aov_ez("id", "dv", data, between = "between_factor", within = "within_factor")`
+- All `afex` ANOVA functions return same results (only differ in how to specify)
 
 ### Repeated-Measures, IID Assumption, & Pooling
 
@@ -87,8 +100,10 @@ knitr::opts_chunk$set(echo = TRUE)
 - For repeated-measures independence assumption often violated, which can have dramatic consequences on significance tests from model (e.g., increased or decreased Type I errors).
 - Three ways to deal with repeated-measures:
     1. *Complete pooling*: Ignore dependency in data (often not appropriate, results likely biased)
-    2. *No pooling*: Separate data based on factor producing dependency and calculate separate statistical model for each subset (decreases precision of parameter estimates, combining results can be non-trivial)
+    2. *No pooling*: Two step procedure. 1. Separate data based on factor producing dependency and calculate separate statistical model for each subset. 2. Analysis of distribution of estimates from step 1. (Prone to overfitting which decreases precision of parameter estimates, estimation error accumulates in step 2, combination and analysis of individual estimates can be non-trivial if interest is in more than 1 parameter)
     3. *Partial pooling*: Analyse data jointly while taking dependency into account (gold standard, e.g., mixed models)
+    
+
     
 ### Mixed Models
 
@@ -109,6 +124,7 @@ knitr::opts_chunk$set(echo = TRUE)
         + added to specific fixed-effects parameter
         + assumed to follow normal distribution which provides _hierarchical shrinkage_, thereby avoids over-fitting
         + should be added to each parameter that varies within the levels of a random-effects grouping factor (i.e., factor is *crossed* with random-effects grouping factor)
+        + Note: random-effects parameters (i.e., random-slopes) can only be added to a parameter if there exist multiple data points (i.e., replications) for each level of random-effects grouping factor and the parameter (e.g., each cell of corresponding factor or design-cell) 
 
 
 ### Random-Effects Parameters in `lme4`/`afex`
@@ -126,6 +142,27 @@ knitr::opts_chunk$set(echo = TRUE)
 Examples:  
 `mixed(dv ~ within_s_factor * within_i_factor + (within_s_factor|s) + (within_i_factor|i), data, method = "S")`  
 `mixed(dv ~ within_s_factor + (within_s_factor||s), data, method = "S", expand_re = TRUE)`
+
+### Crossed Versus Nested Factors
+
+- Factor `A` is **crossed** with factor `B` if multiple levels of `A` appear within multiple levels of `B`. Note that this definition allows for missing values (i.e., it does not need to hold that all levels of `A` appear in all levels of `B`). For example:
+    - Levels `a1`, `a2`, ... of `A`  appear in `b1` of `B` and in `b2` of `B`, etc. 
+    - A within-subject factor (e.g., `congruency`) is crossed with the `participant` factor. 
+    - If each participant responds to a random subset of items and each item is responded to by several participants, `participant` and `item` are crossed.
+
+
+- Factor `A` is **nested** within factor `B` if some levels of `A` appear only within specific levels of factor `B`. E.g.,:
+    - Levels `a1`, `a2`, and `a3` of `A`  appear only in `b1` of `B` and `a4`, `a5`, and `a6` of `A`  appear only in `b2` of `B`
+    - Participants are nested in a between-subjects factor (e.g., `group`), because each level of `participant` only provides data for one level of the factor.
+    - If student can be member of one class only and several classes were observed, factor `student` is nested within factor `class`.
+
+
+- Both dependency structures dealt with in same conceptual manner, via independent random effects-parameters. Specifically, both need independent random effects terms in model formula. For example:
+    - For `students` nested within `class`, where each student has unique label (i.e., `student` id 1 is assigned to exactly one student and not to different students in different classes), at least:  
+    `... + (1|student) + (1|class)`
+    - If additional factor `A` is crossed with `class`, but not with `student` (e.g., some students in each class receive treatment `a1`,  some others `a2`), by-class random slopes need to be added:  
+    `... + (1|student) + (A|class)`
+
 
 ### Hypothesis-Tests for Mixed Models
 
@@ -145,10 +182,12 @@ Examples:
 - Steps for running a mixed model analysis:
     1. Identify desired fixed-effects structure
     2. Identify random-effects grouping factors
-    3. Identify which factors/terms vary within levels of each random-effects grouping factor: maximal model
+    3. Identify *maximal model justified by the design*:
+        - Which factors/terms vary within levels of (i.e. are crossed with) each random-effects grouping factor? 
+        - Are there replicates within factor levels (or parameters/coefficients) for levels of random-effects grouping factor?
     4. Choose method for calculating *p*-values and fit maximal model
     5. Iteratively reduce random-effects structure until all degenerate/zero-variance random-effects parameters are removed.
-- If the maximal model shows critical convergence warnings, reduce random-effects structure:
+- If the maximal model shows critical convergence warnings, reducing random-effects structure probably indicated, even though this introduces unknown risk of anti-conservativity:
     - Start by removing the correlation among random-effects parameters
     - Remove random-effects parameters for highest-order effects with lowest variance
     - It can sometimes help to try different optimizers
@@ -156,7 +195,7 @@ Examples:
 
 ### GLMMs: Mixed-models with Alternative Distributional Assumptions
 
-- Not all data can be reasonable described by a Normal distribution.
+- Not all data can be reasonable described by a normal distribution.
 - Generalized-linear mixed models (GLMMs; e.g., Jaeger, 2008) allow for other distributions. For example:
     - Binomial distribution: Repeated-measures logistic regression
     - Poisson distribution for count data
