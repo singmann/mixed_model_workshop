@@ -1,9 +1,7 @@
 
-**NOTE: This repository is not maintained or updated any more. Please visit the successor repository which extends this workshop to two days:**
+**NOTE: This repository is not maintained or updated any more. Please visit the [successor repository](https://github.com/singmann/mixed_model_workshop_2day) which extends this workshop to two days:**  https://github.com/singmann/mixed_model_workshop_2day
 
-https://github.com/singmann/mixed_model_workshop_2day
-
-=====================================
+-------------
 
 # Statistical Modeling and Mixed Models with R
 
