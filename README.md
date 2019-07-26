@@ -1,3 +1,10 @@
+
+**NOTE: This repository is not maintained or updated any more. Please visit the successor repository which extends this workshop to two days:**
+
+https://github.com/singmann/mixed_model_workshop_2day
+
+=====================================
+
 # Statistical Modeling and Mixed Models with R
 
 This repo contains slides and exercise materials for my workshop on statistical modeling and mixed models with R. Previous instances of this workshop:
